@@ -1,5 +1,5 @@
 import entities.Booking;
-import entities.Person;
+import entities.MovieGoer;
 import entities.Seat;
 import entities.Showing;
 
@@ -18,7 +18,7 @@ public class BookingController implements Serializable{
 
     private static final String filepath = "/dummy/";
     
-    public void createBooking(Showing showing, Person movieGoer, Seat seat) {
+    public void createBooking(Showing showing, MovieGoer movieGoer, Seat seat) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatStr = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         String tid = now.format(formatStr);

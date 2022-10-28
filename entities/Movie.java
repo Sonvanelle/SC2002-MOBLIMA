@@ -3,22 +3,55 @@ import java.util.ArrayList;
 
 public class Movie {
     private String movieName;
-    private long movieHours;
-    private long movieMin;
-    private int status; //0: COMING SOON - 1: PREVIEW - 2: NOW SHOWING - 3: END OF SHOWING
+    private double movieDuration;
+    private showingStatus status; //0: COMING SOON - 1: PREVIEW - 2: NOW SHOWING - 3: END OF SHOWING
     private String synopsis;
     private String director;
     private ArrayList<String> cast;
+    private ArrayList<Review> reviews;
+    private double ticketSales = 0;
+
+    /*
+     * should we have the parameters declared in the constructor arguments, or use the setters in
+     * another line?
+     */
 
     // Constructor
-    public Movie(String movieName, long movieHours, long movieMin, int status, String synopsis, String director, ArrayList<String> cast) {
+    public Movie(String movieName, double movieDuration, showingStatus status, String synopsis, String director, ArrayList<String> cast) {
         this.movieName = movieName;
-        this.movieHours = movieHours;
-        this.movieMin = movieMin;
+        this.movieDuration = movieDuration;
         this.status = status;
         this.synopsis = synopsis;
         this.director = director;
         this.cast = cast;
+        this.reviews = new ArrayList<>();
+        this.ticketSales = 0;
+    }
+
+    // methods
+
+    public float averageRating() {
+        int total = 0;
+        for (int i = 0; i < getReviews().size(); i++) {
+            total += getReviews().get(i).getRating();
+        }
+        return total / getReviews().size();
+    }
+
+    public void printDetails() {
+        System.out.printf("Title: %s\n", getMovieName());
+        System.out.printf(status.toString());
+        System.out.printf("Runtime: %d minutes\n", getMovieDuration());
+        if (getReviews().size() != 0) {
+            System.out.printf("Average score: %.2f\n", averageRating());
+        }
+        System.out.printf("Director: %s\n", getDirector());
+        System.out.println("Cast:");
+        for (int i = 0; i < getCast().size(); i++) {
+            System.out.printf(getCast().get(i)+ "\n");
+        }
+        System.out.printf("Synopsis:\n%s", getSynopsis());
+
     }
 
     // getters
@@ -26,12 +59,8 @@ public class Movie {
         return movieName;
     }
 
-    public long getMovieHours() {
-        return movieHours;
-    }
-
-    public long getMovieMin() {
-        return movieMin;
+    public double getMovieDuration() {
+        return movieDuration;
     }
 
     public showingStatus getStatus() {
@@ -48,6 +77,10 @@ public class Movie {
 
     public ArrayList<String> getCast() {
         return cast;
+    }
+
+    public ArrayList<Review> getReviews() {
+        return reviews;
     }
 
    /*  public float getOverallRating() {
