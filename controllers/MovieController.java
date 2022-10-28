@@ -16,13 +16,6 @@ public class MovieController implements Serializable{
         Movie movie = new Movie(movieName, movieHours, movieMin, val, synopsis, director, cast);
         movieList.add(movie);
     }
-    
-    
-    
-    
-    
-    
-    
 
     
     
