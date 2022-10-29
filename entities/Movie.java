@@ -1,9 +1,10 @@
 package entities;
 import java.util.ArrayList;
+import java.lang.Comparable;
 
-public class Movie {
+public class Movie implements Comparable<Movie>{
     private String movieName;
-    private double movieDuration;
+    private long movieMin;
     private showingStatus status; //0: COMING SOON - 1: PREVIEW - 2: NOW SHOWING - 3: END OF SHOWING
     private String synopsis;
     private String director;
@@ -11,15 +12,22 @@ public class Movie {
     private ArrayList<Review> reviews;
     private double ticketSales = 0;
 
+    @Override public int compareTo(Movie movie){
+        if (this.averageRating() < movie.averageRating()){return -1;}
+        return 1;
+    }
+
     /*
      * should we have the parameters declared in the constructor arguments, or use the setters in
      * another line?
      */
 
     // Constructor
-    public Movie(String movieName, double movieDuration, showingStatus status, String synopsis, String director, ArrayList<String> cast) {
+    public Movie(
+        String movieName, long movieMin, 
+        showingStatus status, String synopsis, String director, ArrayList<String> cast) {
         this.movieName = movieName;
-        this.movieDuration = movieDuration;
+        this.movieMin = movieMin;
         this.status = status;
         this.synopsis = synopsis;
         this.director = director;
@@ -41,7 +49,7 @@ public class Movie {
     public void printDetails() {
         System.out.printf("Title: %s\n", getMovieName());
         System.out.printf(status.toString());
-        System.out.printf("Runtime: %d minutes\n", getMovieDuration());
+        System.out.printf("Runtime: %d hours %d minutes\n", getMovieMin());
         if (getReviews().size() != 0) {
             System.out.printf("Average score: %.2f\n", averageRating());
         }
@@ -59,10 +67,9 @@ public class Movie {
         return movieName;
     }
 
-    public double getMovieDuration() {
-        return movieDuration;
+    public long getMovieMin() {
+        return movieMin;
     }
-
     public showingStatus getStatus() {
         return status;
     }
@@ -81,6 +88,10 @@ public class Movie {
 
     public ArrayList<Review> getReviews() {
         return reviews;
+    }
+
+    public double getTicketSales() {
+        return ticketSales;
     }
 
    /*  public float getOverallRating() {

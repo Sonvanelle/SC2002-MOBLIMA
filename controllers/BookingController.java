@@ -16,24 +16,38 @@ import java.time.format.DateTimeFormatter;
 public class BookingController implements Serializable{
     private ArrayList<Booking> bookingHistory;
 
+    // holds an instance of the controller 
+    private static BookingController controllerInstance = null;
+
     private static final String filepath = "/dummy/";
     
-    public void createBooking(Showing showing, MovieGoer movieGoer, Seat seat) {
+    // methods
+
+    /*
+     * Instantiate a controller object when called.
+     */
+    public BookingController getController() {
+        if (controllerInstance == null) {
+            controllerInstance = new BookingController();
+        }
+
+        return controllerInstance;
+    }
+
+    /*
+     * Create new Booking object and adds it to the booking history list
+     */
+    public void createBooking(Showing showing, MovieGoer movieGoer, Seat seat, int cinemaID, int cineplexID) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatStr = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         String tid = now.format(formatStr);
         tid = showing.getCinema().getCinemaID() + tid;
         
-        Booking booking = new Booking(
-            showing,
-            tid,
-            movieGoer,
-            seat
-        );
+        Booking booking = new Booking(tid, movieGoer, seat, showing, cineplexID, cineplexID);
         bookingHistory.add(booking);
     }
 
-    public void listBooking(String movieGoerNumber){
+    public void listBookingViaNumber(String movieGoerNumber){
         for (int i = 0; i < bookingHistory.size(); i++)
         {
             if (bookingHistory.get(i).getMovieGoer().getMovieGoerNumber() == movieGoerNumber)
@@ -43,8 +57,17 @@ public class BookingController implements Serializable{
         }
     }
 
-    public void saveData(Booking bookingObj){
-        
+    public void listBookingViaEmail(String movieGoerEmail){
+        for (int i = 0; i < bookingHistory.size(); i++)
+        {
+            if (bookingHistory.get(i).getMovieGoer().getEmailAddress() == movieGoerEmail)
+            {   
+                System.out.println(bookingHistory.get(i).toString());
+            }
+        }
+    }
+
+    public void saveData(Booking bookingObj){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
