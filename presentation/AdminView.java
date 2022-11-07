@@ -12,13 +12,13 @@ public class AdminView{
         Scanner input = new Scanner(System.in);
         MovieController moviecontroller = new MovieController();
         int cont = 1;
-        while(cont){
+        while(cont!=0){
             System.out.println("1. Configure system settings \n" +
                                 "2. Create a Movie Listing \n" +
                                 "3. Update a Movie Listing \n" +
                                 "4. Remove a Movie Listing \n" +
-                                "5. View top 5 movies by Sales/Ratings \n +
-                                6. Return to main menu"); 
+                                "5. View top 5 movies by Sales/Ratings \n" +
+                                "6. Return to main menu"); 
 
             int option = input.nextInt();
             switch(option){
@@ -90,7 +90,7 @@ public class AdminView{
                 
                 case 6: //return to main menu.
                     System.out.println("Exiting to main menu...");
-                    moviecontroller.SaveData()
+                    moviecontroller.saveData();
                     cont=0;
                     break;
 

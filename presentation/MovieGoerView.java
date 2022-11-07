@@ -1,8 +1,11 @@
 package presentation;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import entities.Movie;
 import entities.MovieGoer;
+import entities.showingStatus;
 import controllers.BookingController;
 import controllers.MovieController;
 
@@ -13,11 +16,16 @@ public class MovieGoerView {
         int option;
 		Scanner sc = new Scanner(System.in);
 
+        /*
+         * MAIN MENU of the movie-goer application
+         */
+
         do {
             System.out.println(
 				"1. View Booking History \n" +
 				"2. View Top 5 Movies \n" +
-				"3. View all movies \n" +
+				"3. View movies \n" +
+                "4. Make new booking \n" + 
                 "0. Back"
 			);
 
@@ -55,11 +63,11 @@ public class MovieGoerView {
 
                         switch(option2) {
                             case 1:
-                                BookingController.getController().listBookingViaEmail();
+                                BookingController.getController().listBookingViaEmail(movieGoer.getEmailAddress());
                                 break;
                             
                             case 2:
-                                BookingController.getController().listBookingViaNumber();
+                                BookingController.getController().listBookingViaNumber(movieGoer.getMovieGoerNumber());
                                 break;
 
                             case 0:
@@ -70,17 +78,40 @@ public class MovieGoerView {
                                 System.out.println("Please input an option from 1 to 3.");
                                 break;
 					    }
+                        
 
-                } while(option2 != 0);
+                    } while(option2 != 0);
+                    break;
 
                 case 2:
-                    MovieController.getController().
-
+                    MovieController.getController().viewTop5();
+                    break;
+                
+                // use the view movies method as an entry to book movies
                 case 3:
+                    MovieController.getController().printMovieListByStatus();
 
                 case 4:
+                    /* 
+                    MovieController.getController().printMovieList();
+                    System.out.println("Enter which movie you would like to watch: ");
+                    while (!sc.hasNextInt()){
+                        System.out.println("Please input number value."); sc.next();
+                    }
+                    int option3 = sc.nextInt();
+                    MovieController.getController().getMovieList().get(option3-1);
+                    
+                    //TO DO
+                    break; 
+                    */
+
+                case 0:
+                    System.out.println("Exiting...");
+                    break;
 
                 default:
+                    System.out.println("Invalid option.");
+                    break;
 
 			}
         

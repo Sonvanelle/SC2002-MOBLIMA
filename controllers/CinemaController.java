@@ -1,6 +1,8 @@
 import entities.Cinema;
 import entities.Showing;
+import entities.Seat.seatType;
 import entities.Movie;
+import entities.Seat;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,11 +11,24 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-
-public class CinemaController implements Serializable {
+// Still needs Serializable method
+public class CinemaController implements Serializable { 
+    
     ArrayList<Cinema> cinemaList;
 
+    // holds an instance of the controller 
+    private static CinemaController controllerInstance = null;
     
+    // methods
+    /*
+     * Instantiate a controller object when called.
+     */
+    public static CinemaController getController() {
+        if (controllerInstance == null) {
+            controllerInstance = new CinemaController();
+        }
+        return controllerInstance;
+    }
 
     public void createCinema(int id, Cinema.classType val, int rows, int cols){
         Cinema cinema = new Cinema(id, val, rows, cols);
@@ -25,6 +40,41 @@ public class CinemaController implements Serializable {
             
         }
     }
+
+    // TODO Defines layout of the cinema (empty spaces, seat types, etc)
+    public void defineLayout(Cinema cinema) {
+
+    }
+
+
+    public void printCinema(Cinema cinema){ //prints cinema. each seat should take 3 characters to print.
+        int columns = -1;
+        for (int i=0; i<cinema.getSeatingPlan().size();i++){ //if end of row, goes to next column of cinema + prints column number.
+            if (i%(cinema.getRows()-1)==0){
+                System.out.println("\n");
+                if (columns>0){System.out.println(++columns + " ");}
+                else{System.out.println("--");}
+                } 
+
+            if (columns==-1){System.out.println("---");} //print the screen at column -1.
+            else if (columns == 0){System.out.println(" " + i%cinema.getRows() +" ");} //prints the row numbers.
+            else{
+                Seat currentSeat = cinema.getSeatingPlan().get(i);
+                if (currentSeat.getOccupancy()==true){
+                    if (currentSeat.getSeatType()==seatType.COUPLE | currentSeat.getSeatType() == seatType.ELITE | currentSeat.getSeatType() == seatType.ULTIMA){
+                        System.out.println("[x][x]");
+                    }
+                    else{System.out.println("[x]");}
+                }
+                if (currentSeat.getSeatType() == seatType.REGULAR){System.out.println("[ ]");}
+                if (currentSeat.getSeatType() == seatType.EMPTY){System.out.println("   ");}
+                if (currentSeat.getSeatType() == seatType.COUPLE){System.out.println("[c  c]");}
+                if (currentSeat.getSeatType() == seatType.ELITE){System.out.println("[e  e]");}
+                if (currentSeat.getSeatType() == seatType.ULTIMA){System.out.println("[u  u]");} 
+            }
+        }
+    }
+
 
     public boolean verifyNoShowingOverlaps(Cinema cinema, Showing showing){ 
             if (cinema.getShowingList().size() ==  0) {
@@ -70,7 +120,26 @@ public class CinemaController implements Serializable {
             return false;
         }
 
-    public int addShowing(Cinema cinema){ 
+    // Returns true if show successfully added without clashes
+    public boolean addShowingHelper(Cinema cinema, Showing newShowing) { // helper method so can be used in editShowing()
+        ArrayList<Showing> showingList = cinema.getShowingList();
+        if (verifyNoShowingOverlaps(cinema, newShowing)) { // validate if no showing overlaps
+            for (int i=0; i < showingList.size(); i++) { // Add at correct location in chronological order
+                if (showingList.get(i).getShowtime().compareTo(newShowing.getShowtime())>0) {
+                    showingList.add(i, newShowing); 
+                    return true;
+                }
+            }
+            // If this branch reached, add new showing as last element in showingList
+            showingList.add(showingList.size(), newShowing);
+            cinema.setShowingList(showingList);
+            return true;
+        }
+        System.out.println("Error - Clash of show time");
+        return false;
+    }
+
+    public boolean addShowing(Cinema cinema){ 
 
         // Get movie and showtime from admin
         Scanner sc = new Scanner(System.in);
@@ -102,26 +171,11 @@ public class CinemaController implements Serializable {
             }
         }
 
-
+        // Create the newShowing with the user-inputted showtime and movie
         Showing newShowing = new Showing(cinema, newShowTime, movieList.get(movieChoice));
 
-
-
-        ArrayList<Showing> showingList = cinema.getShowingList();
-        if (verifyNoShowingOverlaps(cinema, newShowing)) { // validate if no showing overlaps
-            for (int i=0; i < showingList.size(); i++) { // Add at correct location in chronological order
-                if (showingList.get(i).getShowtime().compareTo(newShowing.getShowtime())>0) {
-                    showingList.add(i, newShowing); 
-                    return 1;
-                }
-            }
-            // If this branch reached, add new showing as last element in showingList
-            showingList.add(showingList.size(), newShowing);
-            cinema.setShowingList(showingList);
-            return 1;
-        }
-        System.out.println("Error - Clash of show time");
-        return -1;
+        sc.close();
+        return addShowingHelper(cinema, newShowing);
     }
 
 
@@ -168,7 +222,7 @@ public class CinemaController implements Serializable {
                 // Change movie
                 showingList.get(index).setMovie(movieList.get(movieChoice));               
 
-            } else if (userChoice == 2) { 
+            } else if (userChoice == 2) { // Edit showing's show time
                 System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm");
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
@@ -190,7 +244,11 @@ public class CinemaController implements Serializable {
                 Showing tempOldShowing = showingList.get(index);
                 
                 showingList.remove(showingList.get(index));
-                if (addShowing(cinema, newShowing) == -1) { 
+                if (verifyNoShowingOverlaps(cinema, tempOldShowing)) {
+                    addShowingHelper(cinema, newShowing);
+                }
+
+                if (addShowingHelper(cinema, newShowing) == false) { 
                     showingList.add(index, tempOldShowing);
                     System.out.println("Error - Clash of show time");
                 }
@@ -210,10 +268,26 @@ public class CinemaController implements Serializable {
 
     }
 
-    public void deleteShowing(Cinema cinema, Showing oldShowing) {
-        ArrayList<Showing> temp = cinema.getShowingList();
-        temp.remove(oldShowing);
-        cinema.setShowingList(temp);
+    public void deleteShowing(Cinema cinema) {
+        ArrayList<Showing> showingList = cinema.getShowingList();
+        Scanner sc = new Scanner(System.in);
+
+        // Print out all showings with indexes
+        for (int i = 0; i < cinema.getShowingList().size(); i++) {
+            Movie currentMovie = showingList.get(i).getMovie();
+            System.out.printf("Movie %d: %-30s | %tT - %tT\n", i+1, showingList.get(i).getMovie().getMovieName(), showingList.get(i).getShowtime(), showingList.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+        }
+
+        // Let user select index of showing they want to delete
+        System.out.println("Enter index of showing you would like to delete: ");
+        int index = sc.nextInt();
+        while (index < 1 || index > showingList.size()) {
+            System.out.printf("Error. Please enter a number from %d to %d: \n");
+            index = sc.nextInt();
+        }
+
+        showingList.remove(index);
+        sc.close();
     }
 
 }

@@ -16,6 +16,19 @@ public class MovieController implements Serializable{
     private ArrayList<Movie> movieList;
 
     private static final String filepath = "/dummy/";
+
+    // holds an instance of the controller 
+    private static MovieController controllerInstance = null;
+    
+    /*
+     * Instantiate a controller object when called.
+     */
+    public static MovieController getController() {
+        if (controllerInstance == null) {
+            controllerInstance = new MovieController();
+        }
+        return controllerInstance;
+    }
     
     @SuppressWarnings("unchecked")
     public MovieController(){
@@ -39,6 +52,130 @@ public class MovieController implements Serializable{
 
     public ArrayList<Movie> getMovieList() {
         return movieList;
+    }
+
+    // helper for printMovieListByStatus, takes in an array list and prints movie name and details
+    public void printMovieList(ArrayList<Movie> moviesToPrint) {
+        for (int i = 0; i < moviesToPrint.size(); i++){
+            System.out.println((i+1) + ") " + moviesToPrint.get(i).getMovieName());
+            System.out.println("Status: " + moviesToPrint.get(i).getStatus());
+            System.out.println("Rating: " + moviesToPrint.get(i).averageRating());
+        }
+    }
+
+    // controller method that allows users to view all movies of a certain showing status
+    // calls movieSelector on the chosen status for further action (booking, review, etcS)
+    public void printMovieListByStatus() {
+
+        int statusOption;
+        Scanner sc = new Scanner(System.in);
+
+        do {
+            System.out.println(
+                "Please select movie showing status: \n" +
+                "1. Now Showing\n" +
+                "2. Preview\n" +
+                "3. Coming Soon\n" +
+                "4. List All Movies\n" +
+                "0. Back\n"
+            );
+            
+            System.out.println("Enter option: ");
+
+            while (!sc.hasNextInt()) {
+                System.out.println("Please input a number value.");
+                sc.next();
+            }
+
+            statusOption = sc.nextInt();
+            ArrayList<Movie> moviesToPrint = new ArrayList<Movie>();
+
+            switch(statusOption) {
+                case 1:
+                    for (int i = 0; i < movieList.size(); i++) {
+                        if (movieList.get(i).getStatus() == showingStatus.NOW_SHOWING) {
+                            moviesToPrint.add(movieList.get(i));
+                        }
+                    }
+                    
+                    printMovieList(moviesToPrint);
+                    movieSelector(moviesToPrint);
+                
+                case 2:
+                    for (int i = 0; i < movieList.size(); i++) {
+                        if (movieList.get(i).getStatus() == showingStatus.PREVIEW) {
+                            moviesToPrint.add(movieList.get(i));
+                        }
+                    }
+                    
+                    printMovieList(moviesToPrint);
+                    movieSelector(moviesToPrint);
+
+                case 3:
+                    for (int i = 0; i < movieList.size(); i++) {
+                        if (movieList.get(i).getStatus() == showingStatus.COMING_SOON) {
+                            moviesToPrint.add(movieList.get(i));
+                        }
+                    }
+                    
+                    printMovieList(moviesToPrint);
+                    movieSelector(moviesToPrint);
+
+                case 4:
+                    for (int i = 0; i < movieList.size(); i++) {
+                        if (movieList.get(i).getStatus() != showingStatus.END_OF_SHOWING) {
+                            moviesToPrint.add(movieList.get(i));
+                        }
+                    }
+                    
+                    printMovieList(moviesToPrint);
+                    movieSelector(moviesToPrint);
+
+                case 0:
+                    System.out.println("Navigating back to main menu.");
+                    break;
+
+                default:
+                    System.out.println("Please input an option from 1 to 4.");
+                    break;
+            }
+        } while(statusOption != 0);
+
+        sc.close();
+    }
+
+    public void movieSelector(ArrayList<Movie> movieSelectionList) {
+        int option = 0; 
+        Scanner sc = new Scanner(System.in);
+
+        do {
+            System.out.println("\nPlease select a movie (0 to exit menu): ");
+
+            while (!sc.hasNextInt()) {
+                System.out.printf("Ivalid input. Please enter option from 1 to %d.\n", movieSelectionList.size());
+                sc.next();
+            }
+    
+            // displayed list starts at index 1
+            option = sc.nextInt() - 1;
+            
+            // user inputs 0 and exits selector
+            if (option == -1) {
+                sc.close();
+                return;
+            }
+            else if (option < 0 || option >= movieSelectionList.size()) {
+                System.out.printf("Invalid input. Please enter option from 1 to %d.\n", movieSelectionList.size());
+            }
+
+
+        } while (option < 0 || option >= movieSelectionList.size());
+
+        // print movie details and display action menu
+        movieSelectionList.get(option).printDetails();
+        // TODO: action menu for movie selection
+        
+        sc.close();
     }
 
     public void viewTop5() {

@@ -1,4 +1,5 @@
 package entities;
+import controllers.CinemaController;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ public class Showing implements Serializable {
     private ArrayList<Seat> seating;
     private Cinema cinema;
 
+    // TODO: decouple cinema from showing (cineplex > cinema > holds showings)
+    // every cinema will hold its own showing list
 
     // Constructor 
     public Showing(Cinema cinema, LocalDateTime showTime, Movie movie){
@@ -16,9 +19,8 @@ public class Showing implements Serializable {
         this.showingTime = showTime;
         this.seating = cinema.getSeatingPlan();
         this.cinema = cinema;
-        cinema.addShowing(this);
+        CinemaController.getController().addShowingHelper(stuff), newSho; //???
     }
-
 
     // Accessors
     public Movie getMovie(){

@@ -1,6 +1,8 @@
 package entities;
 import java.util.ArrayList;
 
+import entities.Seat.seatType;
+
 public class Cinema {
     public enum classType {
         PLATINUM, GOLDEN, NORMAL
@@ -10,6 +12,7 @@ public class Cinema {
     private classType classtype;
     private ArrayList<Seat> seatingPlan;
     private ArrayList<Showing> showingList; //sorted by DateTime.
+    private int row;
     private int column;  // --> print column/2 add space 1234 5678
     
 
@@ -17,11 +20,13 @@ public class Cinema {
     public Cinema(int id, classType val, int rows, int cols){
         this.cinemaID = id;
         this.classtype = val;
+        this.row = rows;
+        this.column = cols;
         this.seatingPlan = new ArrayList<Seat>();
 
         for (int i = 0; i < rows; i++){
                 for (int j = 0; i < cols; i++){
-                    Seat tempSeat = new Seat(i , j, false);
+                    Seat tempSeat = new Seat(i , j, seatType.REGULAR, "nullId", false);
                     this.seatingPlan.add(tempSeat);
                 }
             }
@@ -48,6 +53,10 @@ public class Cinema {
     
     public int getColumns(){
         return this.column;
+    }
+
+    public int getRows(){
+        return this.row;
     }
 
 

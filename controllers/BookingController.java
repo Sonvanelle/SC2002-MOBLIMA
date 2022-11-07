@@ -14,23 +14,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BookingController implements Serializable{
+
+    private static final String filepath = "/dummy/";
+
     private ArrayList<Booking> bookingHistory;
 
     // holds an instance of the controller 
     private static BookingController controllerInstance = null;
-
-    private static final String filepath = "/dummy/";
     
     // methods
-
     /*
      * Instantiate a controller object when called.
      */
-    public BookingController getController() {
+    public static BookingController getController() {
         if (controllerInstance == null) {
             controllerInstance = new BookingController();
         }
-
         return controllerInstance;
     }
 
