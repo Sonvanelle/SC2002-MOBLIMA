@@ -45,6 +45,8 @@ public class CinemaController implements Serializable {
 
     // TODO Defines layout of the cinema (empty spaces, seat types, etc)
     public void defineLayout(Cinema cinema) {
+        Scanner sc = new Scanner(System.in);
+        printCinema2(cinema);
 
     }
 
@@ -75,6 +77,60 @@ public class CinemaController implements Serializable {
                 if (currentSeat.getSeatType() == seatType.ULTIMA){System.out.println("[u  u]");} 
             }
         }
+    }
+
+    public void printCinema2(Cinema cinema) {
+        System.out.println("----------SCREEN----------\n");
+        char rowLetter = 'A';
+        int col = 0; // for a cinema with 16 cols, print row letter when col is 0 or (numOfCols + 1) 
+        // the aisle spaces won't be a separate column in the code logic, but will be printed at the midpoint
+        
+        for (int seatNum = 0; seatNum < cinema.getSeatingPlan().size(); seatNum++) {
+            if (col == 0) { // if start of row
+                System.out.print(rowLetter + " ");
+            }
+            else if (col == cinema.getColumns() + 1) { // if end of row
+                System.out.print(" " + rowLetter);
+            }
+            else { // if col is a seat
+                if (col == cinema.getColumns() / 2 + 1) { // if col is first seat in right half of the row, add spaces before it to represent aisle
+                    System.out.print("  ");
+                }
+                Seat currentSeat = cinema.getSeatingPlan().get(seatNum);
+                if (currentSeat.getOccupancy()==true){
+                    if (currentSeat.getSeatType()==seatType.COUPLE || currentSeat.getSeatType() == seatType.ELITE || currentSeat.getSeatType() == seatType.ULTIMA){
+                        System.out.print("[x][x]");
+                    }
+                    else{System.out.print("[x]");}
+                }
+                else {
+                    if (currentSeat.getSeatType() == seatType.REGULAR){System.out.print("[ ]");}
+                    if (currentSeat.getSeatType() == seatType.EMPTY){System.out.print("   ");}
+                    if (currentSeat.getSeatType() == seatType.COUPLE){System.out.print("[c  c]");}
+                    if (currentSeat.getSeatType() == seatType.ELITE){System.out.print("[e  e]");}
+                    if (currentSeat.getSeatType() == seatType.ULTIMA){System.out.print("[u  u]");} 
+                }
+            }
+            
+            // Increment col number based on whether seat takes 1 or 2 spaces
+            if (col ==  0) { // If start of row
+                col++;
+            }
+            else if (col == cinema.getColumns() + 1) { // If end of row reached
+                col = 0;
+                if (rowLetter == 'H') {rowLetter = 'J'; } // Skip letter 'I'
+                else {rowLetter += 1;}
+                System.out.println();
+            }
+            else if (cinema.getSeatingPlan().get(seatNum).getSeatType() == seatType.REGULAR) {
+                col++;
+            }
+            else { // If seat type takes 2 spaces
+                col += 2;
+            }
+            
+        }
+
     }
 
 
@@ -176,7 +232,6 @@ public class CinemaController implements Serializable {
         // Create the newShowing with the user-inputted showtime and movie
         Showing newShowing = new Showing(cinema, newShowTime, movieList.get(movieChoice));
 
-        sc.close();
         return addShowingHelper(cinema, newShowing);
     }
 
@@ -266,7 +321,6 @@ public class CinemaController implements Serializable {
             }
         }
         
-        sc.close();
 
     }
 
@@ -289,7 +343,6 @@ public class CinemaController implements Serializable {
         }
 
         showingList.remove(index);
-        sc.close();
     }
 
 }
