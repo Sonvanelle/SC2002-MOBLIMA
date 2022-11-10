@@ -1,8 +1,9 @@
 package entities;
 import java.util.ArrayList;
 import java.lang.Comparable;
+import java.io.Serializable;
 
-public class Movie implements Comparable<Movie>{
+public class Movie implements Comparable<Movie>, Serializable{
     private String movieName;
     private long movieMin;
     private showingStatus status; //0: COMING SOON - 1: PREVIEW - 2: NOW SHOWING - 3: END OF SHOWING
@@ -39,6 +40,7 @@ public class Movie implements Comparable<Movie>{
     // methods
 
     public float averageRating() {
+        if (getReviews().size()==0){return 0;}
         int total = 0;
         for (int i = 0; i < getReviews().size(); i++) {
             total += getReviews().get(i).getRating();
@@ -47,9 +49,10 @@ public class Movie implements Comparable<Movie>{
     }
 
     public void printDetails() {
+        System.out.println("------------\n");
         System.out.printf("Title: %s\n", getMovieName());
-        System.out.printf(status.toString());
-        System.out.printf("Runtime: %d hours %d minutes\n", getMovieMin());
+        System.out.printf("Showing Status: " + status.toString() + "\n");
+        System.out.printf("Runtime: %d minutes\n", getMovieMin());
         if (getReviews().size() != 0) {
             System.out.printf("Average score: %.2f\n", averageRating());
         }
@@ -58,7 +61,8 @@ public class Movie implements Comparable<Movie>{
         for (int i = 0; i < getCast().size(); i++) {
             System.out.printf(getCast().get(i)+ "\n");
         }
-        System.out.printf("Synopsis:\n%s", getSynopsis());
+        System.out.printf("Synopsis:\n%s\n", getSynopsis());
+        System.out.println("------------\n");
 
     }
 

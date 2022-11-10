@@ -9,9 +9,12 @@ public class AppView {
 
 		do {
 			System.out.println(
+				"MOBLIMBA \n" +
+				"------------\n" +
 				"1. Movie-Goer \n" +
 				"2. Staff \n" +
-				"3. Quit"
+				"3. Quit \n" +
+				"------------"
 			);
 			System.out.println("Enter option: ");
 
@@ -22,6 +25,7 @@ public class AppView {
 			
 			option = sc.nextInt();
 			sc.nextLine();
+			
 			switch(option) {
 				case 1: 
 					MovieGoerView customerview = new MovieGoerView();
@@ -33,8 +37,6 @@ public class AppView {
 						System.out.println("Enter admin password:");
 						String password = sc.nextLine();
 						String adminpass = "test";
-
-						//get admin password from txt file
 
 						if (password.equals(adminpass)){
 							System.out.println("Logging in... Entering admin mode.");

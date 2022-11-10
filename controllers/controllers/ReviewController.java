@@ -13,7 +13,7 @@ import java.io.IOException;
 public class ReviewController implements Serializable{
     private ArrayList<Review> reviewList;
     private static ReviewController controllerInstance = null;
-    private static final String filepath = "/data/reviews/";
+    private static final String filepath = "reviews.ser";
 
     public ReviewController getController() {
         if (controllerInstance == null) {

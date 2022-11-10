@@ -15,14 +15,18 @@ public class AdminView{
         MovieController moviecontroller = new MovieController();
         int cont = 1;
         while(cont!=0){
-            System.out.println("1. Configure system settings \n" +
+            System.out.println("Admin View \n" +
+                                "------------\n" +
+                                "1. Configure system settings \n" +
                                 "2. Create a Movie Listing \n" +
                                 "3. Update a Movie Listing \n" +
                                 "4. Remove a Movie Listing \n" +
                                 "5. View top 5 movies by Sales/Ratings \n" +
-                                "6. Return to main menu"); 
+                                "6. Return to main menu \n" + 
+                                "------------"); 
 
             int option = input.nextInt();
+            input.nextLine();
             switch(option){
                 case 1:
                     //write code for getting/setting system settings from a txt file
@@ -45,6 +49,7 @@ public class AdminView{
                                         "3. NOW SHOWING \n" +
                                         "4. END OF SHOWING \n" );
                     int showstatus = input.nextInt();
+                    input.nextLine();
                     switch (showstatus){
                         case 1: val = showingStatus.COMING_SOON; break;
                         case 2: val = showingStatus.PREVIEW; break;
@@ -57,7 +62,7 @@ public class AdminView{
                     while(true){
                         System.out.println("Enter movie cast (format: Actor - Character); enter STOP to stop: ");
                         String castName = input.nextLine();
-                        if (castName=="STOP"){break;}
+                        if (castName.equals("STOP")){break;}
                         cast.add(castName);
                     }
                     moviecontroller.createMovie(movieName, movieMin, val, synopsis, director, cast);

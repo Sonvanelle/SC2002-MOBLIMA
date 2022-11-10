@@ -17,9 +17,9 @@ import java.time.format.DateTimeFormatter;
 
 public class BookingController implements Serializable{
 
-    private static final String filepath = "/dummy/";
+    private static final String filepath = "bookinghistory.ser"; //testing purposes
 
-    private ArrayList<Booking> bookingHistory;
+    private static ArrayList<Booking> bookingHistory;
 
     // holds an instance of the controller 
     private static BookingController controllerInstance = null;
@@ -27,13 +27,23 @@ public class BookingController implements Serializable{
     // methods
     /*
      * Instantiate a controller object when called.
+     * Also deserializes bookingHistory from file; if none found/null object, create a new one.
      */
+    @SuppressWarnings("unchecked")
     public static BookingController getController() {
         if (controllerInstance == null) {
             controllerInstance = new BookingController();
         }
+        bookingHistory = (ArrayList<Booking>)loadData();
+        if (bookingHistory == null){
+            System.out.println("Saving to new file.");
+            bookingHistory = new ArrayList<Booking>();
+            saveData(bookingHistory);
+        }
         return controllerInstance;
     }
+
+
 
     /*
      * Create new Booking object and adds it to the booking history list
@@ -49,6 +59,7 @@ public class BookingController implements Serializable{
     }
 
     public void listBookingViaNumber(String movieGoerNumber){
+        if (bookingHistory.size()==0) {System.out.println("No bookings found."); return;}
         for (int i = 0; i < bookingHistory.size(); i++)
         {
             if (bookingHistory.get(i).getMovieGoer().getMovieGoerNumber() == movieGoerNumber)
@@ -59,6 +70,7 @@ public class BookingController implements Serializable{
     }
 
     public void listBookingViaEmail(String movieGoerEmail){
+        if (bookingHistory.size()==0) {System.out.println("No bookings found."); return;}
         for (int i = 0; i < bookingHistory.size(); i++)
         {
             if (bookingHistory.get(i).getMovieGoer().getEmailAddress() == movieGoerEmail)
@@ -68,7 +80,7 @@ public class BookingController implements Serializable{
         }
     }
 
-    public void saveData(Booking bookingObj){  
+    public static void saveData(ArrayList<Booking> bookingObj){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
@@ -76,11 +88,12 @@ public class BookingController implements Serializable{
             objectOut.writeObject(bookingObj);
             objectOut.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Got an error while saving booking data: "+e);
+            //e.printStackTrace();
         }
     }
 
-    public Object loadData(){
+    public static Object loadData(){
         try{
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
@@ -89,7 +102,8 @@ public class BookingController implements Serializable{
             objectIn.close();
             return obj;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Got an error while loading booking data: " + e);
+            //e.printStackTrace();
             return null;
         }        
     }

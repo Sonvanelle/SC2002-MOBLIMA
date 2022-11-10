@@ -17,7 +17,7 @@ import java.util.Collections;
 public class MovieController implements Serializable{
     private ArrayList<Movie> movieList;
 
-    private static final String filepath = "/dummy/";
+    private static final String filepath = "movielist.ser";
 
     // holds an instance of the controller 
     private static MovieController controllerInstance = null;
@@ -35,6 +35,10 @@ public class MovieController implements Serializable{
     @SuppressWarnings("unchecked")
     public MovieController(){
         movieList = (ArrayList<Movie>)loadData();
+        if (movieList==null){
+            movieList = new ArrayList<Movie>();
+            saveData();
+        }
     }
 
     public void createMovie(String movieName, long movieMin, showingStatus val, 
@@ -58,15 +62,17 @@ public class MovieController implements Serializable{
 
     // helper for printMovieListByStatus, takes in an array list and prints movie name and details
     public void printMovieList(ArrayList<Movie> moviesToPrint) {
+        System.out.println("------------\n");
         for (int i = 0; i < moviesToPrint.size(); i++){
             System.out.println((i+1) + ") " + moviesToPrint.get(i).getMovieName());
             System.out.println("Status: " + moviesToPrint.get(i).getStatus());
-            System.out.println("Rating: " + moviesToPrint.get(i).averageRating());
+            System.out.println("Rating: " + moviesToPrint.get(i).averageRating() + "\n");
         }
+        System.out.println("------------\n");
     }
 
     // controller method that allows users to view all movies of a certain showing status
-    // calls movieSelector on the chosen status for further action (booking, review, etcS)
+    // calls movieSelector on the chosen status for further action (booking, review, etc)
     public void printMovieListByStatus() {
 
         int statusOption;
@@ -74,12 +80,15 @@ public class MovieController implements Serializable{
 
         do {
             System.out.println(
+                "\nViewing Movies... \n" +
+                "------------\n" +
                 "Please select movie showing status: \n" +
                 "1. Now Showing\n" +
                 "2. Preview\n" +
                 "3. Coming Soon\n" +
                 "4. List All Movies\n" +
-                "0. Back\n"
+                "0. Back\n" +
+                "------------\n"
             );
             
             System.out.println("Enter option: ");
@@ -90,6 +99,7 @@ public class MovieController implements Serializable{
             }
 
             statusOption = sc.nextInt();
+            sc.nextLine();
             ArrayList<Movie> moviesToPrint = new ArrayList<Movie>();
 
             switch(statusOption) {
@@ -102,6 +112,8 @@ public class MovieController implements Serializable{
                     
                     printMovieList(moviesToPrint);
                     movieSelector(moviesToPrint);
+                    System.out.println("Returning...");
+                    break;
                 
                 case 2:
                     for (int i = 0; i < movieList.size(); i++) {
@@ -112,6 +124,8 @@ public class MovieController implements Serializable{
                     
                     printMovieList(moviesToPrint);
                     movieSelector(moviesToPrint);
+                    System.out.println("Returning...");
+                    break;
 
                 case 3:
                     for (int i = 0; i < movieList.size(); i++) {
@@ -122,6 +136,8 @@ public class MovieController implements Serializable{
                     
                     printMovieList(moviesToPrint);
                     movieSelector(moviesToPrint);
+                    System.out.println("Returning...");
+                    break;
 
                 case 4:
                     for (int i = 0; i < movieList.size(); i++) {
@@ -132,6 +148,8 @@ public class MovieController implements Serializable{
                     
                     printMovieList(moviesToPrint);
                     movieSelector(moviesToPrint);
+                    System.out.println("Returning...");
+                    break;
 
                 case 0:
                     System.out.println("Navigating back to main menu.");
@@ -152,7 +170,7 @@ public class MovieController implements Serializable{
 
         do {
             System.out.println("\nPlease select a movie (0 to exit menu): ");
-
+                
             while (!sc.hasNextInt()) {
                 System.out.printf("Ivalid input. Please enter option from 1 to %d.\n", movieSelectionList.size());
                 sc.next();
@@ -160,9 +178,11 @@ public class MovieController implements Serializable{
     
             // displayed list starts at index 1
             option = sc.nextInt() - 1;
+            sc.nextLine();
             
             // user inputs 0 and exits selector
             if (option == -1) {
+                System.out.println("Returning...");
                 sc.close();
                 return;
             }
@@ -176,8 +196,6 @@ public class MovieController implements Serializable{
         // print movie details and display action menu
         movieSelectionList.get(option).printDetails();
         // TODO: action menu for movie selection
-        
-        sc.close();
     }
 
     public void viewTop5() {
@@ -201,6 +219,7 @@ public class MovieController implements Serializable{
             
             // after selection, fill the array list based on the selected parameters
             option = sc.nextInt();
+            sc.nextLine();
             ArrayList<Movie> top5List = new ArrayList<Movie>();
 
             switch (option) {
@@ -259,7 +278,8 @@ public class MovieController implements Serializable{
             objectOut.writeObject(movieList);
             objectOut.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Got an error while saving movie data: " + e);
+            //e.printStackTrace();
         }
     }
     
@@ -272,7 +292,8 @@ public class MovieController implements Serializable{
             objectIn.close();
             return obj;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Got an error while loading movie data: " + e);
+            //e.printStackTrace();
             return null;
         }        
     }
