@@ -15,11 +15,17 @@ public class ReviewController implements Serializable{
     private static ReviewController controllerInstance = null;
     private static final String filepath = "reviews.ser";
 
+    @SuppressWarnings("unchecked")
     public ReviewController getController() {
         if (controllerInstance == null) {
             controllerInstance = new ReviewController();
         }
-
+        reviewList = (ArrayList<Review>)loadData();
+        if (reviewList==null){
+            System.out.println("No reviewList found; creating new file.");
+            reviewList = new ArrayList<Review>();
+            saveData(reviewList);
+        }
         return controllerInstance;
     }
 
@@ -38,7 +44,7 @@ public class ReviewController implements Serializable{
         }
     }
 
-    public void saveData(Review bookingObj){  
+    public void saveData(ArrayList<Review> bookingObj){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);

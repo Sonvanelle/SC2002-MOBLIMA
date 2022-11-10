@@ -15,31 +15,28 @@ import java.util.Scanner;
 import java.util.Collections;
 
 public class MovieController implements Serializable{
-    private ArrayList<Movie> movieList;
-
+    private static ArrayList<Movie> movieList;
     private static final String filepath = "movielist.ser";
-
-    // holds an instance of the controller 
     private static MovieController controllerInstance = null;
+    
     
     /*
      * Instantiate a controller object when called.
      */
+    @SuppressWarnings("unchecked")
     public static MovieController getController() {
         if (controllerInstance == null) {
             controllerInstance = new MovieController();
         }
-        return controllerInstance;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public MovieController(){
         movieList = (ArrayList<Movie>)loadData();
         if (movieList==null){
+            System.out.println("No movieList found; creating new file.");
             movieList = new ArrayList<Movie>();
             saveData();
         }
+        return controllerInstance;
     }
+    
 
     public void createMovie(String movieName, long movieMin, showingStatus val, 
     String synopsis, String director, ArrayList<String> cast)
@@ -54,6 +51,17 @@ public class MovieController implements Serializable{
                 movieList.remove(movieList.get(i));
             }
         }
+    }
+
+    public void editMovie(String movieName){
+        Movie movieToEdit;
+        for (int i=0; i<movieList.size(); i++){
+            if (movieList.get(i).getMovieName() == movieName){
+                movieToEdit = movieList.get(i);
+            }
+        }
+
+        //TO DO: implement choices for editing the movie's metadata
     }
 
     public ArrayList<Movie> getMovieList() {
@@ -270,7 +278,7 @@ public class MovieController implements Serializable{
         sc.close();
     }
     
-    public void saveData(){
+    public static void saveData(){
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
@@ -283,7 +291,7 @@ public class MovieController implements Serializable{
         }
     }
     
-    public Object loadData(){
+    public static Object loadData(){
         try{
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);

@@ -77,13 +77,22 @@ public class AdminView{
                     }
                     System.out.println("Enter the movie name to edit: ");
                     String name = input.nextLine();
-                    for (int i=0; i<movieList.size(); i++){
-                        if (movieList.get(i).getMovieName() == name){
 
-                        }
+                    System.out.println("Enter (0) to edit movie metadata, (1) to edit its showings: ");
+                    int choice;
+                    while (!input.hasNextInt()){
+                        System.out.println("Please input a number."); 
+                        input.next();}
+                    choice = input.nextInt();
+                    input.nextLine();
+
+                    if (choice != 0 & choice != 1){
+                        System.out.println("Invalid choice. Returning...");
+                        break;
                     }
 
-
+                    if (choice == 1) moviecontroller.editMovie(name);
+                    else if (choice == 0)
                     break;
                 
 

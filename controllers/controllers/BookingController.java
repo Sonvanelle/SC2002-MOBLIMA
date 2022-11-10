@@ -36,7 +36,7 @@ public class BookingController implements Serializable{
         }
         bookingHistory = (ArrayList<Booking>)loadData();
         if (bookingHistory == null){
-            System.out.println("Saving to new file.");
+            System.out.println("No bookingHistory found; creating new file.");
             bookingHistory = new ArrayList<Booking>();
             saveData(bookingHistory);
         }
