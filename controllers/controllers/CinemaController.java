@@ -1,3 +1,5 @@
+package controllers;
+
 import entities.Cinema;
 import entities.Showing;
 import entities.Seat.seatType;

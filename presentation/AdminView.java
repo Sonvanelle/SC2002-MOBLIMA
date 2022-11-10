@@ -1,3 +1,5 @@
+package presentation;
+
 import entities.MovieGoer;
 import entities.Movie;
 import controllers.BookingController;
@@ -13,14 +15,18 @@ public class AdminView{
         MovieController moviecontroller = new MovieController();
         int cont = 1;
         while(cont!=0){
-            System.out.println("1. Configure system settings \n" +
+            System.out.println("Admin View \n" +
+                                "------------\n" +
+                                "1. Configure system settings \n" +
                                 "2. Create a Movie Listing \n" +
                                 "3. Update a Movie Listing \n" +
                                 "4. Remove a Movie Listing \n" +
                                 "5. View top 5 movies by Sales/Ratings \n" +
-                                "6. Return to main menu"); 
+                                "6. Return to main menu \n" + 
+                                "------------"); 
 
             int option = input.nextInt();
+            input.nextLine();
             switch(option){
                 case 1:
                     //write code for getting/setting system settings from a txt file
@@ -43,6 +49,7 @@ public class AdminView{
                                         "3. NOW SHOWING \n" +
                                         "4. END OF SHOWING \n" );
                     int showstatus = input.nextInt();
+                    input.nextLine();
                     switch (showstatus){
                         case 1: val = showingStatus.COMING_SOON; break;
                         case 2: val = showingStatus.PREVIEW; break;
@@ -55,7 +62,7 @@ public class AdminView{
                     while(true){
                         System.out.println("Enter movie cast (format: Actor - Character); enter STOP to stop: ");
                         String castName = input.nextLine();
-                        if (castName=="STOP"){break;}
+                        if (castName.equals("STOP")){break;}
                         cast.add(castName);
                     }
                     moviecontroller.createMovie(movieName, movieMin, val, synopsis, director, cast);
@@ -70,13 +77,22 @@ public class AdminView{
                     }
                     System.out.println("Enter the movie name to edit: ");
                     String name = input.nextLine();
-                    for (int i=0; i<movieList.size(); i++){
-                        if (movieList.get(i).getMovieName() == name){
 
-                        }
+                    System.out.println("Enter (0) to edit movie metadata, (1) to edit its showings: ");
+                    int choice;
+                    while (!input.hasNextInt()){
+                        System.out.println("Please input a number."); 
+                        input.next();}
+                    choice = input.nextInt();
+                    input.nextLine();
+
+                    if (choice != 0 & choice != 1){
+                        System.out.println("Invalid choice. Returning...");
+                        break;
                     }
 
-
+                    if (choice == 1) moviecontroller.editMovie(name);
+                    else if (choice == 0)
                     break;
                 
 

@@ -22,11 +22,14 @@ public class MovieGoerView {
 
         do {
             System.out.println(
+                "\nCustomer View \n" + 
+                "------------\n" +
 				"1. View Booking History \n" +
 				"2. View Top 5 Movies \n" +
-				"3. View movies \n" +
-                "4. Make new booking \n" + 
-                "0. Back"
+				"3. View Movies \n" +
+                "4. Make New Booking \n" + 
+                "0. Back \n" +
+                "------------"
 			);
 
             System.out.print("Enter option: ");
@@ -38,18 +41,21 @@ public class MovieGoerView {
 			}
 			
 			option = sc.nextInt();
+            sc.nextLine();
 			switch(option) {
 				case 1: 
-					// prompt for customer number or email, then seatch for booking list
-					
+					// prompt for customer number or email, then search for booking list
 					int option2;
 
 					do {
 						System.out.println(
+                            "\nViewing bookings... \n" +
+                            "------------\n" +
                             "Please select login method: \n" +
                             "1. Email Address\n" +
                             "2. Mobile Number\n" +
-                            "0. Back"
+                            "0. Back \n" +
+                            "------------\n"
                         );
                         
                         System.out.println("Enter option: ");
@@ -60,14 +66,19 @@ public class MovieGoerView {
                         }
 
                         option2 = sc.nextInt();
+                        sc.nextLine();
 
                         switch(option2) {
                             case 1:
-                                BookingController.getController().listBookingViaEmail(movieGoer.getEmailAddress());
+                                System.out.println("Input your email address: ");
+                                String emailInput = sc.nextLine();
+                                BookingController.getController().listBookingViaEmail(emailInput);
                                 break;
                             
                             case 2:
-                                BookingController.getController().listBookingViaNumber(movieGoer.getMovieGoerNumber());
+                                System.out.println("Input your phone number: ");
+                                String numberInput = sc.nextLine();
+                                BookingController.getController().listBookingViaNumber(numberInput);
                                 break;
 
                             case 0:
@@ -90,6 +101,7 @@ public class MovieGoerView {
                 // use the view movies method as an entry to book movies
                 case 3:
                     MovieController.getController().printMovieListByStatus();
+                    break;
 
                 case 4:
                     /* 
@@ -102,9 +114,9 @@ public class MovieGoerView {
                     MovieController.getController().getMovieList().get(option3-1);
                     
                     //TO DO
-                    break; 
                     */
-
+                    break; 
+                    
                 case 0:
                     System.out.println("Exiting...");
                     break;

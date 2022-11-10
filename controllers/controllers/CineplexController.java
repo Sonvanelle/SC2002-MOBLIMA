@@ -1,3 +1,5 @@
+package controllers;
+
 import entities.Cineplex;
 
 import java.util.ArrayList;
