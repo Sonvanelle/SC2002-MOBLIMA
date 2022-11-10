@@ -1,3 +1,5 @@
+package controllers;
+
 import entities.Movie;
 import entities.showingStatus;
 

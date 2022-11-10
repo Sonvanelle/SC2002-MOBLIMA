@@ -1,3 +1,5 @@
+package controllers;
+
 import entities.Booking;
 import entities.MovieGoer;
 import entities.Seat;

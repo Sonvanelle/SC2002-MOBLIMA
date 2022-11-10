@@ -1,3 +1,5 @@
+package controllers;
+
 import entities.Showing;
 import entities.showingStatus;
 import entities.Movie;
@@ -9,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.utils.Serializable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 

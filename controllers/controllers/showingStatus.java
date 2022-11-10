@@ -1,4 +1,6 @@
 
+package controllers;
+
 public enum showingStatus {
     COMING_SOON, 
     PREVIEW, 

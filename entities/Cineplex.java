@@ -8,5 +8,9 @@ public class Cineplex{
     private ArrayList<Cinema> cinemaList;
     private ArrayList<Integer> cinemaIDs;
 
+
+    public ArrayList<Cinema> getCinemaList(){
+        return cinemaList;
+    }
     
 }

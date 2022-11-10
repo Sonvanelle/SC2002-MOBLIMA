@@ -1,3 +1,5 @@
+package presentation;
+
 import entities.MovieGoer;
 import entities.Movie;
 import controllers.BookingController;

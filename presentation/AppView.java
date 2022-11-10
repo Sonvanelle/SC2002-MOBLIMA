@@ -21,28 +21,31 @@ public class AppView {
 			}
 			
 			option = sc.nextInt();
+			sc.nextLine();
 			switch(option) {
 				case 1: 
 					MovieGoerView customerview = new MovieGoerView();
 					customerview.printMenu();
 					break;
+					
 				case 2:
 					while(true){
-						System.out.println("Enter admin password: ");
+						System.out.println("Enter admin password:");
 						String password = sc.nextLine();
-						String adminpass;
+						String adminpass = "test";
 
 						//get admin password from txt file
 
-						if (password==adminpass){
+						if (password.equals(adminpass)){
 							System.out.println("Logging in... Entering admin mode.");
 							AdminView adminview = new AdminView();
 							adminview.printMenu();
 						}
 
 						else{
-							System.out.println("Wrong password. Type 1 to try again, 2 to enter as Movie-Goer.");
+							System.out.println(password + " is wrong. Type 1 to try again, 2 to enter as Movie-Goer.");
 							int pwoption = sc.nextInt();
+							sc.nextLine();
 							if (pwoption>2 | pwoption<1){
 								System.out.println("Invalid; trying login again.");
 								continue;
@@ -50,7 +53,7 @@ public class AppView {
 							else if (pwoption==1){continue;}
 							else{
 								MovieGoerView custview = new MovieGoerView();
-								customerview.printMenu();
+								custview.printMenu();
 								break;
 								}
 						}	
