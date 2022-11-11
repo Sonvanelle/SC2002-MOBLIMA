@@ -43,49 +43,185 @@ public class CinemaController implements Serializable {
         }
     }
 
-    // TODO Defines layout of the cinema (empty spaces, seat types, etc)
     public void defineLayout(Cinema cinema) {
         Scanner sc = new Scanner(System.in);
-        printCinema2(cinema);
+        
+        while (true) {
+            System.out.println("------------");
+            System.out.println("1. Use default layout (only for cinema with 10 rows and 16 columns");
+            System.out.println("2. Define custom layout");
+            System.out.println("0. Exit");
+            System.out.println("------------");
 
-    }
+            int userChoice = sc.nextInt();
 
+            if (userChoice == 1) { // Use default layout
+                if (cinema.getRows() != 10 || cinema.getColumns() != 16) { // Validate that cinema has exactly 10 rows and 16 cols
+                    System.out.println("Unsuccessful. Default layout cannot be used with cinema's current dimensions");
+                } else {
+                    defineLayoutHelperDefineSeatType(cinema, seatType.EMPTY, true);
+                    defineLayoutHelperDefineSeatType(cinema, seatType.COUPLE, true);
+                    defineLayoutHelperDefineSeatType(cinema, seatType.ELITE, true);
+                    defineLayoutHelperDefineSeatType(cinema, seatType.ULTIMA, true); 
+                    printCinema(cinema);
+                }                               
+            }
+            else if (userChoice == 2) { // Define custom layout
+                // Assume a complete, rectangular grid of regular seats.
+                // First line of user input defines all the non-seats.
+                // Second line defines couple seats, third line defines elite seats, fourth line defines ultima seats.
 
-    public void printCinema(Cinema cinema){ //prints cinema. each seat should take 3 characters to print.
-        int columns = -1;
-        for (int i=0; i<cinema.getSeatingPlan().size();i++){ //if end of row, goes to next column of cinema + prints column number.
-            if (i%(cinema.getRows()-1)==0){
-                System.out.println("\n");
-                if (columns>0){System.out.println(++columns + " ");}
-                else{System.out.println("--");}
-                } 
-
-            if (columns==-1){System.out.println("---");} //print the screen at column -1.
-            else if (columns == 0){System.out.println(" " + i%cinema.getRows() +" ");} //prints the row numbers.
-            else{
-                Seat currentSeat = cinema.getSeatingPlan().get(i);
-                if (currentSeat.getOccupancy()==true){
-                    if (currentSeat.getSeatType()==seatType.COUPLE | currentSeat.getSeatType() == seatType.ELITE | currentSeat.getSeatType() == seatType.ULTIMA){
-                        System.out.println("[x][x]");
+                // Regardless of whether cinema already had a defined layout, reset it and start from scratch        
+                ArrayList<Seat> newSeatingPlan = new ArrayList<Seat>();
+                for (int i = 0; i < cinema.getRows(); i++) {
+                    for (int j = 0; j < cinema.getColumns(); j++){
+                        Seat newSeat = new Seat(i , j, seatType.REGULAR, "nullId", false); 
+                        newSeatingPlan.add(newSeat);
                     }
-                    else{System.out.println("[x]");}
                 }
-                if (currentSeat.getSeatType() == seatType.REGULAR){System.out.println("[ ]");}
-                if (currentSeat.getSeatType() == seatType.EMPTY){System.out.println("   ");}
-                if (currentSeat.getSeatType() == seatType.COUPLE){System.out.println("[c  c]");}
-                if (currentSeat.getSeatType() == seatType.ELITE){System.out.println("[e  e]");}
-                if (currentSeat.getSeatType() == seatType.ULTIMA){System.out.println("[u  u]");} 
+                cinema.setSeatingPlan(newSeatingPlan);
+                
+                System.out.println("Layout is currently: ");
+                printCinema(cinema);
+
+                // Set empty (invalid), couple, elite, ultima seats
+                defineLayoutHelperDefineSeatType(cinema, seatType.EMPTY, false);
+                defineLayoutHelperDefineSeatType(cinema, seatType.COUPLE, false);
+                defineLayoutHelperDefineSeatType(cinema, seatType.ELITE, false);
+                defineLayoutHelperDefineSeatType(cinema, seatType.ULTIMA, false);
+            }
+            else if (userChoice == 0) {
+                break;
+            }
+            else {
+                System.out.println("Invalid. Please enter a number from 0 to 2: ");
+                userChoice = sc.nextInt();
             }
         }
     }
 
-    public void printCinema2(Cinema cinema) {
-        System.out.println("----------SCREEN----------\n");
+    public void defineLayoutHelperDefineSeatType(Cinema cinema, seatType sType, boolean defaultLayoutFlag) {
+        Scanner sc = new Scanner(System.in);
+        String[] seatPositionsArray = null;
+        if (defaultLayoutFlag) { // If admin wants to use default layout
+            if (sType == seatType.EMPTY) {
+                seatPositionsArray = new String[] {"A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "J9", "J10"};
+            }
+            else if (sType == seatType.COUPLE) {
+                seatPositionsArray = new String[] {"H1", "H3", "H5", "H7", "H9", "H11", "H13", "H15"};
+            }
+            else if (sType == seatType.ELITE) {
+                seatPositionsArray = new String[] {"I1", "I3", "I5", "I7", "I9", "I11", "I13", "I15"};
+            }
+            else if (sType == seatType.ULTIMA) {
+                seatPositionsArray = new String[] {"J1", "J3", "J5", "J7", "J13", "J15"};
+            }
+        }
+        else { // if admin wants a custom layout
+            // Get 1 line of user input, which defines all instances of the particular seatType in the cinema 
+            if (sType == seatType.EMPTY) {
+                System.out.println("Enter all invalid seats separated by spaces (e.g. a1 A2 B1 B2 C1 C2 D1 D2 J9 J10)");
+            }
+            else { // if 2-seater (the argument sType won't be a REGULAR seat)
+                System.out.printf("Enter all %s seats separated by spaces (e.g. h1 H3 H7 H9 H11 H13 H15)\nNote: A1 represents a %s seat from A1-A2\n", sType.name(), sType.name());
+            }
+            
+            String userin = sc.nextLine();
+            if (userin == "") { // if user input is an empty line, don't define that seat type
+                System.out.println("Layout is currently: ");
+                printCinema(cinema);
+                return;
+            }
+
+            // Validate user input
+            while (!validateDefineLayoutUserInput(cinema, userin)) { 
+                if (sType == seatType.EMPTY) {
+                    System.out.println("Enter all invalid seats separated by spaces (e.g. a1 A16 B1 B16)");
+                }
+                else { // if 2-seater (the argument sType won't be a REGULAR seat)
+                    System.out.printf("Enter all %s seats separated by spaces (e.g. e1 E15 F2 F14)\nNote: A1 represents a %s seat from A1-A2\n", sType.name(), sType.name());
+                }
+                userin = sc.nextLine();
+            }
+
+            seatPositionsArray = userin.split(" ");
+        }
+        
+        
+        // Iterate through each seatPosition from the user input and update cinema's seatingPlan accordingly
+        for (String seatPos: seatPositionsArray) {
+            int seatPosRow = (int) Character.toUpperCase(seatPos.charAt(0))  - 65;
+            int seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1;
+            for (int i = 0; i < cinema.getSeatingPlan().size(); i++) { // Find seat that matches in the seats ArrayList
+                if (cinema.getSeatingPlan().get(i).getRow() == seatPosRow && cinema.getSeatingPlan().get(i).getCol() == seatPosCol) {
+                    if (sType == seatType.EMPTY) {
+                        cinema.getSeatingPlan().get(i).setSeatType(seatType.EMPTY);
+                    }
+                    else {
+                        // TODO Check whether 2-seaters clash with sides or aisle, or other previously defined seatTypes
+                        // Since 2-seater spans 2 seats, remove the right seat and set the left seat to the appropriate seatType
+                        cinema.getSeatingPlan().remove(i+1);
+                        cinema.getSeatingPlan().get(i).setSeatType(sType);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (defaultLayoutFlag == false) { // Print layout at each step only if admin is doing custom layout
+            System.out.println("Layout is currently: ");
+            printCinema(cinema);
+        }
+    }
+
+    public boolean validateDefineLayoutUserInput(Cinema cinema, String userin) {
+        // Validate that user input has expected formatting (seats sep. by spaces, e.g. "A1 A16 b1 b16") 
+        // and that row letters and col numbers don't exceed cinema's dimensions
+
+        // Logic for validating no clashes is in a separate function
+        String[] seatPositionsArray = userin.split(" "); 
+        for (String seatPos : seatPositionsArray) {
+            // Separate each supposed seat position string (like "A1") into the row and col parts
+            char seatPosRowChar = seatPos.charAt(0);
+
+            
+            if (!Character.isAlphabetic(seatPosRowChar)) { // Validate row char is a letter
+                System.out.println("Invalid. First character of each seat must be a letter.");
+                return false;
+            }
+            int seatPosCol;
+            try { // Validate col String is numeric
+                seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid. Column for each seat must be a number.");
+                return false;
+            }
+            
+            // Validate row and col don't exceed cinema's dimensions
+            int seatPosRow = (int) Character.toUpperCase(seatPos.charAt(0))  - 65;
+            if (seatPosRow >= cinema.getRows() || seatPosRow < 0 || seatPosCol >= cinema.getColumns() || seatPosCol < 0) {
+                System.out.println("Invalid. Seat exceeds cinema's dimensions.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void printCinema(Cinema cinema) {
+        String screen = "----------SCREEN----------";
+        // Print screen in the center of the 0th row
+        for (int i = 0; i < (cinema.getColumns()*3+6)/2 - screen.length()/2; i++) {
+            System.out.print(" ");
+        }
+        System.out.println(screen);
+
+
         char rowLetter = 'A';
         int col = 0; // for a cinema with 16 cols, print row letter when col is 0 or (numOfCols + 1) 
         // the aisle spaces won't be a separate column in the code logic, but will be printed at the midpoint
         
-        for (int seatNum = 0; seatNum < cinema.getSeatingPlan().size(); seatNum++) {
+        int seatNum = 0;
+        while (seatNum < cinema.getSeatingPlan().size()) {
             if (col == 0) { // if start of row
                 System.out.print(rowLetter + " ");
             }
@@ -112,25 +248,26 @@ public class CinemaController implements Serializable {
                 }
             }
             
-            // Increment col number based on whether seat takes 1 or 2 spaces
+            // Increment col number, rowLetter and seatNum
             if (col ==  0) { // If start of row
                 col++;
             }
             else if (col == cinema.getColumns() + 1) { // If end of row reached
                 col = 0;
-                if (rowLetter == 'H') {rowLetter = 'J'; } // Skip letter 'I'
-                else {rowLetter += 1;}
+                rowLetter += 1;
                 System.out.println();
             }
-            else if (cinema.getSeatingPlan().get(seatNum).getSeatType() == seatType.REGULAR) {
+            else if (cinema.getSeatingPlan().get(seatNum).getSeatType() == seatType.REGULAR || cinema.getSeatingPlan().get(seatNum).getSeatType() == seatType.EMPTY) {
                 col++;
+                seatNum++;
             }
             else { // If seat type takes 2 spaces
                 col += 2;
+                seatNum++;
             }
             
         }
-
+        System.out.print(" " + rowLetter + "\n\n");
     }
 
 
@@ -169,7 +306,7 @@ public class CinemaController implements Serializable {
                 }
             }
 
-            //showing TBA is the later than all current showings, so check the latest showing in showingList for overlap.
+            //showing TBA is later than all current showings, so check the latest showing in showingList for overlap.
             Movie previousMovie = cinema.getShowingList().get(cinema.getShowingList().size()-1).getMovie();
             LocalDateTime previousShowingEnd = cinema.getShowingList().get(cinema.getShowingList().size()-1).getShowtime().plusMinutes(previousMovie.getMovieMin());
             if (previousShowingEnd.compareTo(showing.getShowtime())<0){

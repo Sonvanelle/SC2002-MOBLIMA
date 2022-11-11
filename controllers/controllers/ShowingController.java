@@ -67,6 +67,8 @@ public class ShowingController implements Serializable{
         if (showingsToEdit.size()==0) {System.out.println("No showings found. Returning... \n"); return;}
 
         //TO DO: pick a showing in showingsToEdit, by (index-1), and allow to change its datetime.
+        // I've written an editShowing method in CinemaController alr, but I'm not too sure whether 
+        // the parameters basically remain the same or what
     }
 
 

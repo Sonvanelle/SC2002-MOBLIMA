@@ -21,11 +21,11 @@ public class Cinema {
         this.cinemaID = id;
         this.classtype = val;
         this.row = rows;
-        this.column = cols;
+        this.column = cols; // Assumed to have even number of columns
         this.seatingPlan = new ArrayList<Seat>();
 
         for (int i = 0; i < rows; i++){
-                for (int j = 0; i < cols; i++){
+                for (int j = 0; j < cols; j++){
                     Seat tempSeat = new Seat(i , j, seatType.REGULAR, "nullId", false);
                     this.seatingPlan.add(tempSeat);
                 }

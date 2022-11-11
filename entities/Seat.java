@@ -16,7 +16,7 @@ public class Seat implements Serializable {
 
   // row and column are identifiers for a space, the seat ID is the identifier
   // a seat -- couple seats take up 2 spaces but share the same seat id
-  Seat(int row, int col, seatType sType, String seatId, boolean occupied){
+  public Seat(int row, int col, seatType sType, String seatId, boolean occupied){
     this.row = row;
     this.col = col;
     this.seatId = seatId;
