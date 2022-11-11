@@ -53,16 +53,32 @@ public class CinemaController implements Serializable {
             System.out.println("0. Exit");
             System.out.println("------------");
 
+            while (!sc.hasNextInt()) {
+				System.out.println("Please input a number value.");
+				sc.next();
+			}
             int userChoice = sc.nextInt();
+			sc.nextLine();
 
             if (userChoice == 1) { // Use default layout
                 if (cinema.getRows() != 10 || cinema.getColumns() != 16) { // Validate that cinema has exactly 10 rows and 16 cols
                     System.out.println("Unsuccessful. Default layout cannot be used with cinema's current dimensions");
                 } else {
+                    // Regardless of whether cinema already had a defined layout, reset it and start from scratch        
+                    ArrayList<Seat> newSeatingPlan = new ArrayList<Seat>();
+                    for (int i = 0; i < cinema.getRows(); i++) {
+                        for (int j = 0; j < cinema.getColumns(); j++){
+                            Seat newSeat = new Seat(i , j, seatType.REGULAR, "nullId", false); 
+                            newSeatingPlan.add(newSeat);
+                        }
+                    }
+                    cinema.setSeatingPlan(newSeatingPlan);
+
                     defineLayoutHelperDefineSeatType(cinema, seatType.EMPTY, true);
                     defineLayoutHelperDefineSeatType(cinema, seatType.COUPLE, true);
                     defineLayoutHelperDefineSeatType(cinema, seatType.ELITE, true);
                     defineLayoutHelperDefineSeatType(cinema, seatType.ULTIMA, true); 
+                    System.out.println("Layout is currently: ");
                     printCinema(cinema);
                 }                               
             }
@@ -103,7 +119,7 @@ public class CinemaController implements Serializable {
     public void defineLayoutHelperDefineSeatType(Cinema cinema, seatType sType, boolean defaultLayoutFlag) {
         Scanner sc = new Scanner(System.in);
         String[] seatPositionsArray = null;
-        if (defaultLayoutFlag) { // If admin wants to use default layout
+        if (defaultLayoutFlag) { // If admin wants to use default layout, hardcode seatPositionsArray
             if (sType == seatType.EMPTY) {
                 seatPositionsArray = new String[] {"A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "J9", "J10"};
             }
@@ -111,13 +127,13 @@ public class CinemaController implements Serializable {
                 seatPositionsArray = new String[] {"H1", "H3", "H5", "H7", "H9", "H11", "H13", "H15"};
             }
             else if (sType == seatType.ELITE) {
-                seatPositionsArray = new String[] {"I1", "I3", "I5", "I7", "I9", "I11", "I13", "I15"};
+                seatPositionsArray = new String[] {"I2", "I4", "I6", "I10", "I12", "I14"};
             }
             else if (sType == seatType.ULTIMA) {
                 seatPositionsArray = new String[] {"J1", "J3", "J5", "J7", "J13", "J15"};
             }
         }
-        else { // if admin wants a custom layout
+        else { // if admin wants a custom layout, create seatPositionsArray from user input
             // Get 1 line of user input, which defines all instances of the particular seatType in the cinema 
             if (sType == seatType.EMPTY) {
                 System.out.println("Enter all invalid seats separated by spaces (e.g. a1 A2 B1 B2 C1 C2 D1 D2 J9 J10)");
@@ -143,7 +159,6 @@ public class CinemaController implements Serializable {
                 }
                 userin = sc.nextLine();
             }
-
             seatPositionsArray = userin.split(" ");
         }
         
@@ -174,11 +189,57 @@ public class CinemaController implements Serializable {
         }
     }
 
+    public boolean validateDefineLayoutNoClash(Cinema cinema, String[] seatPositionsArray) {
+        // Check for 2 things:
+        // 1. 2-seaters do not clash with sides or aisle
+        // 2. 2-seaters do not clash with invalid seats or other predefined 2-seaters
+
+        // (seatPositionsArray has been validated by the time this method is reached)
+
+        int lastColOfLeftHalf = cinema.getColumns() / 2;
+        for (String seatPos : seatPositionsArray) {
+            char seatPosRowChar = Character.toUpperCase(seatPos.charAt(0));
+            int seatPosRow = (int)seatPosRowChar  - 65; // 0-based indexing
+            int seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1; // 0-based indexing
+            if (seatPosCol + 1 == lastColOfLeftHalf || seatPosCol + 1 == cinema.getColumns()) { // 1. If last seat in left half clashes with aisle, or last seat in right half clashes with RHS of cinema
+                System.out.printf("Invalid. Seat %c%d clashes with aisle or sides. \n", seatPosRowChar, seatPosCol);
+                return false;
+            }
+            else { 
+                for (int i = 0; i < cinema.getSeatingPlan().size(); i++) { // Find seat that matches in the seats ArrayList
+                    if (cinema.getSeatingPlan().get(i).getRow() == seatPosRow && cinema.getSeatingPlan().get(i).getCol() == seatPosCol) { // If seat match found
+                        seatType currSeatType = cinema.getSeatingPlan().get(i).getSeatType();
+                        if (currSeatType == seatType.EMPTY || currSeatType == seatType.COUPLE || currSeatType == seatType.ELITE || currSeatType == seatType.ULTIMA) { 
+                        // 2a. If 2-seater clashes with invalid seat at that specific spot, or clash with other 2-seaters to the left
+                            System.out.printf("Invalid. Seat %c%d is an invalid seat. \n", seatPosRowChar, seatPosCol);
+                            return false;
+                        } 
+                        // TODO this "else if" statement conditions still incomplete 
+                        else if (cinema.getSeatingPlan().get(i+1).getSeatType() == seatType.EMPTY) { // 2b. If 2-seater clashes with invalid seats or 2-seaters to the right
+                            return false;
+                        }                        
+                        else {
+                            break; // Current seat in seatPositionsArray no clashes; Move on to next seat in seatPositionsArray
+                        }
+                        
+                    }
+                }
+
+                // 2c. If this line is reached, it means that the seat at position <row, col> could not be
+                // found in the seating plan, because it has already been deleted to make way for a 2-seater 
+                System.out.printf("Invalid. Seat %c%d clashes with another 2-seater. \n", seatPosRowChar, seatPosCol);
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     public boolean validateDefineLayoutUserInput(Cinema cinema, String userin) {
         // Validate that user input has expected formatting (seats sep. by spaces, e.g. "A1 A16 b1 b16") 
         // and that row letters and col numbers don't exceed cinema's dimensions
+        // (Logic for validating no clashes is in validateDefineLayoutNoClash())
 
-        // Logic for validating no clashes is in a separate function
         String[] seatPositionsArray = userin.split(" "); 
         for (String seatPos : seatPositionsArray) {
             // Separate each supposed seat position string (like "A1") into the row and col parts
