@@ -8,18 +8,14 @@ public class Showing implements Serializable {
     private Movie showingMovie;
     private LocalDateTime showingTime;
     private ArrayList<Seat> seating;
-    private Cinema cinema;
-
-    // TODO: decouple cinema from showing (cineplex > cinema > holds showings)
-    // every cinema will hold its own showing list
+    private int showingCinemaID;
 
     // Constructor 
-    public Showing(Cinema cinema, LocalDateTime showTime, Movie movie){
+    public Showing(int showingCinemaID, LocalDateTime showTime, Movie movie){
         this.showingMovie = movie;
         this.showingTime = showTime;
         this.seating = cinema.getSeatingPlan();
-        this.cinema = cinema;
-        CinemaController.getController().addShowingHelper(stuff), newSho; //???
+        this.showingCinemaID = showingCinemaID;
     }
 
     // Accessors
@@ -27,7 +23,7 @@ public class Showing implements Serializable {
         return this.showingMovie;
     }
     
-    public Cinema getCinema(){
+    public Cinema getShowingCinemaID(){
         return this.cinema;
     }
 
