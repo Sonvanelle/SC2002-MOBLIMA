@@ -11,12 +11,12 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 
 public class ReviewController implements Serializable{
-    private ArrayList<Review> reviewList;
+    private static ArrayList<Review> reviewList;
     private static ReviewController controllerInstance = null;
     private static final String filepath = "reviews.ser";
 
     @SuppressWarnings("unchecked")
-    public ReviewController getController() {
+    public static ReviewController getController() {
         if (controllerInstance == null) {
             controllerInstance = new ReviewController();
         }
@@ -39,12 +39,15 @@ public class ReviewController implements Serializable{
         for (int i = 0; i < reviewList.size(); i++){
             if (reviewList.get(i).getMovieName() == movieName)
             {
-                System.out.println(reviewList.get(i).toString());
+                System.out.println(reviewList.get(i).getRating());
+                System.out.printf("By: %s\n", reviewList.get(i).getReviewer());
+                System.out.println(reviewList.get(i).getReview());
+                System.out.println();
             }
         }
     }
 
-    public void saveData(ArrayList<Review> bookingObj){  
+    public static void saveData(ArrayList<Review> bookingObj){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
@@ -56,7 +59,7 @@ public class ReviewController implements Serializable{
         }
     }
 
-    public Object loadData(){
+    public static Object loadData(){
         try{
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);

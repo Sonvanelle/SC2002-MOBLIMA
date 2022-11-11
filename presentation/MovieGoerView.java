@@ -111,10 +111,18 @@ public class MovieGoerView {
                         System.out.println("Please input number value."); sc.next();
                     }
                     int option3 = sc.nextInt();
-                    MovieController.getController().getMovieList().get(option3-1);
+                    Movie selected_movie=MovieController.getController().getMovieList().get(option3-1); // get need to be done
+                    ShowingController.getController().listShowings(selected_movie, cineplex); // need to find cineplex first
+                    System.out.println("Enter which showing you would like to: ");
+                    while (!sc.hasNextInt()){
+                        System.out.println("Please input number value."); sc.next();
+                    }
+                    int option4=sc.nextInt();
+                    Showing selected_showing = ShowingController.getController().getShowing(option4,cineplex) ; ///undone
                     
                     //TO DO
                     */
+
                     break; 
                     
                 case 0:

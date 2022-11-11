@@ -11,7 +11,7 @@ public class Cinema {
     private int cinemaID;
     private classType classtype;
     private ArrayList<Seat> seatingPlan;
-    private ArrayList<Showing> showingList; //sorted by DateTime.
+    // private ArrayList<Showing> showingList; //sorted by DateTime.
     private int row;
     private int column;  // --> print column/2 add space 1234 5678
     
@@ -30,8 +30,6 @@ public class Cinema {
                     this.seatingPlan.add(tempSeat);
                 }
             }
-
-        this.showingList = new ArrayList<Showing>();
     }
 
     //Accessor
@@ -47,9 +45,9 @@ public class Cinema {
         return this.seatingPlan;
     }
     
-    public ArrayList<Showing> getShowingList() {
+    /* public ArrayList<Showing> getShowingList() {
         return this.showingList;
-    }
+    } */
     
     public int getColumns(){
         return this.column;
@@ -71,10 +69,6 @@ public class Cinema {
     
     public void setSeatingPlan(ArrayList<Seat> seatingPlan){
         this.seatingPlan = seatingPlan;
-    }
-    
-    public void setShowingList(ArrayList<Showing> showingList) {
-        this.showingList = showingList;
     }
     
     public void setColumns(int column){

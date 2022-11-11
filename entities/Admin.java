@@ -1,6 +1,9 @@
 package entities;
 
 public class Admin {
-    int adminID;
+    protected int adminID;
+    protected String password;
+
+
 }
     

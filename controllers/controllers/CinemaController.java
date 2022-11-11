@@ -7,6 +7,7 @@ import entities.Movie;
 import entities.Seat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -16,7 +17,8 @@ import java.time.format.DateTimeParseException;
 // Still needs Serializable method
 public class CinemaController implements Serializable { 
     
-    ArrayList<Cinema> cinemaList;
+    // mapping of cineplexes and their cinemas
+    HashMap<String, ArrayList<Cinema>> cineplexMap = new HashMap<String, ArrayList<Cinema>>();
 
     // holds an instance of the controller 
     private static CinemaController controllerInstance = null;
@@ -32,14 +34,21 @@ public class CinemaController implements Serializable {
         return controllerInstance;
     }
 
-    public void createCinema(int id, Cinema.classType val, int rows, int cols){
+    public void createCinema(String cineplex, int id, Cinema.classType val, int rows, int cols){
         Cinema cinema = new Cinema(id, val, rows, cols);
-        cinemaList.add(cinema);
+        ArrayList<Cinema> existing = cineplexMap.containsKey(cineplex) ? cineplexMap.get(cineplex) : new ArrayList<Cinema>();
+        existing.add(cinema);
+        cineplexMap.put(cineplex, existing);
     }
 
     public void listCinema(){
-        for (int i=0; i<cinemaList.size();i++){
-            
+        for(String key : cineplexMap.keySet())
+        {
+            System.out.println(key);
+            ArrayList<Cinema> cinemaList = cineplexMap.get(key);
+            for (int j = 0; j < cinemaList.size(); j++){
+            System.out.println(cinemaList.get(j).getCinemaID());
+            }
         }
     }
 
@@ -114,6 +123,7 @@ public class CinemaController implements Serializable {
                 userChoice = sc.nextInt();
             }
         }
+        sc.close();
     }
 
     public void defineLayoutHelperDefineSeatType(Cinema cinema, seatType sType, boolean defaultLayoutFlag) {
@@ -331,51 +341,7 @@ public class CinemaController implements Serializable {
         System.out.print(" " + rowLetter + "\n\n");
     }
 
-
-    public boolean verifyNoShowingOverlaps(Cinema cinema, Showing showing){ 
-            if (cinema.getShowingList().size() ==  0) {
-                return true;
-            }
-
-            for (int i=0; i < cinema.getShowingList().size(); i++){
-                if (cinema.getShowingList().get(i).getShowtime().compareTo(showing.getShowtime())>0){ //find the showing that starts after showing to-be-added (TBA).
-                    if (i == 0) { // new showing is the earliest in the showingList
-                        Movie previousMovie = showing.getMovie();
-                        LocalDateTime previousShowingEnd = showing.getShowtime().plusMinutes(previousMovie.getMovieMin());
-                        if (previousShowingEnd.compareTo(cinema.getShowingList().get(0).getShowtime())<0){ //check that (current showing + its movietime) doesn't overlap with next showing start time.
-                            return true;
-                        } else {
-                            return false;
-                        }
-                        
-                    }
-
-                    Movie previousMovie = cinema.getShowingList().get(i-1).getMovie();
-                    LocalDateTime previousShowingEnd = cinema.getShowingList().get(i-1).getShowtime().plusMinutes(previousMovie.getMovieMin());
-                    
-                    if (previousShowingEnd.compareTo(showing.getShowtime())<0){ //check that (showing before + its movietime) doesn't overlap with (showing TBA).
-                        Movie showingMovie = showing.getMovie();
-                        LocalDateTime showingEnd = showing.getShowtime().plusMinutes(showingMovie.getMovieMin());
-
-                        if (cinema.getShowingList().get(i).getShowtime().compareTo(showingEnd)>=0) { //check that (showing after) doesn't overlap with (showing TBA + its movietime).
-                            return true;
-                        } 
-                        else {
-                            return false;
-                        }
-                    }   
-                }
-            }
-
-            //showing TBA is later than all current showings, so check the latest showing in showingList for overlap.
-            Movie previousMovie = cinema.getShowingList().get(cinema.getShowingList().size()-1).getMovie();
-            LocalDateTime previousShowingEnd = cinema.getShowingList().get(cinema.getShowingList().size()-1).getShowtime().plusMinutes(previousMovie.getMovieMin());
-            if (previousShowingEnd.compareTo(showing.getShowtime())<0){
-                return true;
-            }
-            return false;
-        }
-
+    /*
     // Returns true if show successfully added without clashes
     public boolean addShowingHelper(Cinema cinema, Showing newShowing) { // helper method so can be used in editShowing()
         ArrayList<Showing> showingList = cinema.getShowingList();
@@ -542,5 +508,5 @@ public class CinemaController implements Serializable {
 
         showingList.remove(index);
     }
-
+    */
 }

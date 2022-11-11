@@ -53,11 +53,11 @@ public class AppView {
 								continue;
 							}
 							else if (pwoption==1){continue;}
-							else{
+							else {
 								MovieGoerView custview = new MovieGoerView();
 								custview.printMenu();
 								break;
-								}
+							}
 						}	
 					break;
 					}

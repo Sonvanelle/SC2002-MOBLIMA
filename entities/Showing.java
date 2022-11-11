@@ -1,5 +1,4 @@
 package entities;
-import controllers.CinemaController;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -8,23 +7,23 @@ public class Showing implements Serializable {
     private Movie showingMovie;
     private LocalDateTime showingTime;
     private ArrayList<Seat> seating;
-    private int showingCinemaID;
+    private Cinema showingCinema;
 
     // Constructor 
-    public Showing(int showingCinemaID, LocalDateTime showTime, Movie movie){
+    public Showing(Cinema showingCinema, LocalDateTime showTime, Movie movie){
         this.showingMovie = movie;
         this.showingTime = showTime;
-        this.seating = cinema.getSeatingPlan();
-        this.showingCinemaID = showingCinemaID;
+        this.showingCinema = showingCinema;
+        this.seating = showingCinema.getSeatingPlan();
     }
 
     // Accessors
     public Movie getMovie(){
         return this.showingMovie;
     }
-    
-    public Cinema getShowingCinemaID(){
-        return this.cinema;
+
+    public Cinema getShowingCinema() {
+        return this.showingCinema;
     }
 
     public LocalDateTime getShowtime(){

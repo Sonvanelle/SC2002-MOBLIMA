@@ -61,6 +61,12 @@ public class MovieController implements Serializable{
             }
         }
 
+        System.out.println("What do you want to edit?" +
+        "\n 1. Name" +
+        "\n 2. " + 
+        "\n 3." );
+        movieToEdit
+
         //TO DO: implement choices for editing the movie's metadata
     }
 
@@ -172,6 +178,7 @@ public class MovieController implements Serializable{
         sc.close();
     }
 
+    // allows the user to select a movie from the chosen list
     public void movieSelector(ArrayList<Movie> movieSelectionList) {
         int option = 0; 
         Scanner sc = new Scanner(System.in);
@@ -203,7 +210,47 @@ public class MovieController implements Serializable{
 
         // print movie details and display action menu
         movieSelectionList.get(option).printDetails();
-        // TODO: action menu for movie selection
+
+        if (movieSelectionList.get(option).getStatus() == showingStatus.COMING_SOON) {
+            // selection menu for movies that are COMING SOON, ie. movies unable to be booked
+            System.out.println("This movie is coming soon!");
+        } else {
+            // selection menu for movies that are NOW SHOWING and PREVIEW, ie. movies able to be booked
+            movieActionList(movieSelectionList.get(option));
+        }
+        
+    }
+
+    // for a user to view and leave reviews, make bookings
+    public void movieActionList(Movie selectedMovie) {
+        int option;
+        Scanner sc = new Scanner(System.in);
+
+        do {
+            System.out.println(
+            "What do you want to do? \n" +
+            "1. View Reviews\n" +
+            "2. Create Review\n" +
+            "3. Make Booking\n" +
+            "0. Back"
+        );
+        
+        System.out.println("Enter option: ");
+        while (!sc.hasNextInt()) {
+            System.out.println("Please input a number value.");
+            sc.next();
+        }
+        
+        option = sc.nextInt();
+        sc.nextLine();
+
+        switch (option) {
+            case 1:
+                // 
+                ReviewController.getController().listReviews(selectedMovie.getMovieName());
+        }
+
+        } while(option != 0);
     }
 
     public void viewTop5() {
@@ -224,10 +271,11 @@ public class MovieController implements Serializable{
                 System.out.println("Please input a number value.");
                 sc.next();
             }
-            
-            // after selection, fill the array list based on the selected parameters
+
             option = sc.nextInt();
             sc.nextLine();
+
+            // after selection, fill the array list based on the selected parameters
             ArrayList<Movie> top5List = new ArrayList<Movie>();
 
             switch (option) {

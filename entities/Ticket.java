@@ -1,5 +1,4 @@
-    
-
+package entities;
 
 public class Ticket{
     private float basePrice;

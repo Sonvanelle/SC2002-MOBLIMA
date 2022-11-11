@@ -43,8 +43,6 @@ public class BookingController implements Serializable{
         return controllerInstance;
     }
 
-
-
     /*
      * Create new Booking object and adds it to the booking history list
      */
@@ -52,7 +50,7 @@ public class BookingController implements Serializable{
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatStr = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         String tid = now.format(formatStr);
-        tid = showing.getCinema().getCinemaID() + tid;
+        tid = showing.getShowingCinema().getCinemaID() + tid;
         
         Booking booking = new Booking(tid, movieGoer, seat, showing, cineplexID, cineplexID);
         bookingHistory.add(booking);
