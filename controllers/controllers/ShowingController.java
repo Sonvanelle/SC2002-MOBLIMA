@@ -39,7 +39,9 @@ public class ShowingController implements Serializable{
         }
         showingList = (ArrayList<Showing>)loadData();
         if (showingList==null){
-            System.out.println("No showingList; creating new file.");
+            System.out.println("No showingList found; creating new file.");
+            showingList = new ArrayList<Showing>();
+            saveData();
         }
         return controllerInstance;
     }
@@ -115,6 +117,101 @@ public class ShowingController implements Serializable{
             
         }
         System.out.print(" " + rowLetter + "\n\n");
+    }
+
+    public void setSeatingForShowing(Showing showing) {
+        
+        Scanner sc = new Scanner(System.in);
+
+        // Print current showing's seating plan
+        printCinema(showing);
+
+        // Prompt user to enter seat position they want
+        // (e.g. for a 2-seater spanning A1-A2, entering either A1 or A2 should be sufficient)
+        System.out.println("Enter seat position");
+        String seatPos = sc.nextLine();
+
+        // Validate that seat pos chosen is valid format, seatType isn't EMPTY and that it isn't occupied 
+        // (can reuse CinemaController validation methods)
+        while (!validateSeatSelection(showing, seatPos)) {
+            System.out.println("Enter seat position");
+            seatPos = sc.nextLine();
+        }
+        int seatPosRow = (int) seatPos.charAt(0) - 65;
+        int seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1;
+
+        // Set occupancy of specific seat element in seating (ArrayList<Seat>) in the Showing object to true 
+        int seatIndex = findSeatIndexByRowAndCol(showing, seatPosRow, seatPosCol);
+        showing.getSeating().get(seatIndex).setOccupancy(true);
+
+    }
+
+    public boolean validateSeatSelection(Showing showing, String seatPos) {
+        // Validate that:
+        // 1. Format of seatPos is <Letter><Number>
+        // 2. Row and col don't exceed cinema's dimensions (seat exists in the cinema layout)
+        // 3. Seat selected is not EMPTY (invalid) 
+        // 4. Seat selected is not occupied
+
+        Cinema cinema = showing.getShowingCinema();
+        char seatPosRowChar = seatPos.charAt(0);
+
+        // 1. Validate format of seatPos is <Letter><Number>
+        if (!Character.isAlphabetic(seatPosRowChar)) { // Validate row char is a letter
+            System.out.println("Invalid seat. First character of seat must be a letter.");
+            return false;
+        }
+        int seatPosCol;
+        try { // Validate col String is numeric
+            seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid seat. Second character onwards of seat must be a number.");
+            return false;
+        }  
+        int seatPosRow = (int) seatPosRowChar - 65;
+
+        // 2. Validate row and col don't exceed cinema's dimensions
+        if (seatPosRow >= cinema.getRows() || seatPosRow < 0 || seatPosCol >= cinema.getColumns() || seatPosCol < 0) {
+            System.out.println("Invalid seat.");
+            return false;
+        }
+
+        // 3, 4. Validate seat selected is not EMPTY (invalid) and not occupied
+        int seatIndex = findSeatIndexByRowAndCol(showing, seatPosRow, seatPosCol);
+        Seat seat = cinema.getSeatingPlan().get(seatIndex);
+        seatType currSeatType = seat.getSeatType();
+        if (currSeatType == seatType.EMPTY) {
+            System.out.println("Invalid seat.");
+            return false;
+        }
+        else if (seat.getOccupancy()) {
+            System.out.println("Seat already occupied.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public int findSeatIndexByRowAndCol(Showing showing, int row, int col) {
+        // Returns -1 if no seat exists at that specified row and col.
+        // If there's a 2-seater from A1-A2, this method returns same index for both A1 and A2.
+        // The row and col arguments would already have been validated when this method runs, such that seat will always be found. -1 should never be returned.
+        Cinema cinema = showing.getShowingCinema();
+        
+        for (int i = 0; i < cinema.getSeatingPlan().size(); i++) { // Find seat that matches in the seats ArrayList
+            if (cinema.getSeatingPlan().get(i).getRow() == row && cinema.getSeatingPlan().get(i).getCol() == col) { // If single seat, or left half of 2-seater found
+                return i;
+            }
+            else if (cinema.getSeatingPlan().get(i).getRow() > row || cinema.getSeatingPlan().get(i).getCol() > col) { 
+                // If seat-to-be-found has been "skipped" over, that means the seat-to-be-found is the prev seat, 
+                // which is a 2-seater with the col argument being the right half of the seat.
+                seatType prevSeatType = cinema.getSeatingPlan().get(i-1).getSeatType();
+                if (prevSeatType == seatType.COUPLE || prevSeatType == seatType.ELITE || prevSeatType == seatType.ULTIMA) {
+                    return i - 1;
+                }
+            }
+        }
+        return -1;
     }
 
     public boolean verifyNoShowingOverlaps(Cinema cinema, Showing showing) {

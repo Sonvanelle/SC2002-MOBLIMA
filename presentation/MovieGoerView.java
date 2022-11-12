@@ -75,13 +75,15 @@ public class MovieGoerView {
                                     System.out.println("Input your email address: ");
                                     String emailInput = sc.nextLine();
 
-                                    // check for valid login
+                                    // check for valid login - if the MovieGoer exists in the movieGoerList
                                     if (MovieGoerController.getController().searchMovieGoerEmail(emailInput) != null) {
                                         movieGoerCheck = MovieGoerController.getController().searchMovieGoerEmail(emailInput);
+                                    } else {
+                                        
                                     }
                                 }
                                 
-                                // set current account to the one used to log in
+                                // set current account to the one used to log in - account is held by the controller
                                 MovieGoerController.getController().setCurrentMovieGoer(movieGoerCheck);
                                 break;
                             
@@ -192,6 +194,6 @@ public class MovieGoerView {
 
 			}
         
-        } while(option != 0 && MovieGoerController.getController().getCurrentMovieGoer() != null);
+        } while(option != 0 || MovieGoerController.getController().getCurrentMovieGoer() != null);
     }
 }

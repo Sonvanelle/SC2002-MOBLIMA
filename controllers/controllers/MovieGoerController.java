@@ -66,7 +66,7 @@ public class MovieGoerController implements Serializable {
 
         System.out.println("Creating new account. \nWe will require a valid name, email, mobile number and age:");
 
-        while(!isEmailValid(email) && isMobileNumberValid(number) && isExistingMovieGoer(email, number)){
+        while(!isEmailValid(email) || !isMobileNumberValid(number) || !isMovieGoerValid(email, number)){
             System.out.print("Enter your name: ");
             name = sc.nextLine();
             System.out.print("Enter your email address: ");
@@ -82,7 +82,7 @@ public class MovieGoerController implements Serializable {
     }
     
     // checks to see if the email address and mobile number already exists in movieGoerList
-    public Boolean isExistingMovieGoer(String email, String number)  
+    public Boolean isMovieGoerValid(String email, String number)  
     {
         for(MovieGoer m : movieGoerList)
         {

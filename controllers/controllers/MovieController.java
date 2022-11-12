@@ -302,93 +302,97 @@ public class MovieController implements Serializable{
             "2. Create Review\n" +
             "3. Make Booking\n" +
             "0. Back"
-        );
+            );
         
-        System.out.println("Enter option: ");
-        while (!sc.hasNextInt()) {
-            System.out.println("Please input a number value.");
-            sc.next();
-        }
-        
-        option = sc.nextInt();
-        sc.nextLine();
+            System.out.println("Enter option: ");
+            while (!sc.hasNextInt()) {
+                System.out.println("Please input a number value.");
+                sc.next();
+            }
+            
+            option = sc.nextInt();
+            sc.nextLine();
 
-        switch (option) {
-            case 1:
-                ReviewController.getController().listReviews(selectedMovie.getMovieName());
+            switch (option) {
+                case 1: // View reviews
+                    ReviewController.getController().listReviews(selectedMovie.getMovieName());
+                    break;
 
-            case 2:
-                int rating;
-                String reviewBody;
-                System.out.printf("Leave a review for %s!\n", selectedMovie.getMovieName());
-                System.out.print("Enter your rating from 0-5: ");
+                case 2: // Create review
+                    int rating;
+                    String reviewBody;
+                    System.out.printf("Leave a review for %s!\n", selectedMovie.getMovieName());
+                    System.out.print("Enter your rating from 0-5: ");
 
-                // users can leave ratings in integers from 0-5
-                while (!sc.hasNextInt() && !(sc.nextInt() >= '0' && sc.nextInt() <= '5')) {
-                    System.out.println("Please input a number value between 0 to 5. ");
-                    sc.next();
-                }
-                
-                rating = sc.nextInt();
-                sc.nextLine();
+                    // users can leave ratings in integers from 0-5
+                    while (!sc.hasNextInt() && !(sc.nextInt() >= '0' && sc.nextInt() <= '5')) {
+                        System.out.println("Please input a number value between 0 to 5. ");
+                        sc.next();
+                    }
+                    
+                    rating = sc.nextInt();
+                    sc.nextLine();
 
-                // enter review body
-                System.out.print("What did you think about the movie? \nInput ENTER when done: ");
-                reviewBody = sc.nextLine();
+                    // enter review body
+                    System.out.print("What did you think about the movie? \nInput ENTER when done: ");
+                    reviewBody = sc.nextLine();
 
-                ReviewController.getController().createReview(
-                    selectedMovie.getMovieName(), rating, reviewBody, movieGoer.getMovieGoerName());
+                    ReviewController.getController().createReview(
+                        selectedMovie.getMovieName(), rating, reviewBody, movieGoer.getMovieGoerName());
 
-            case 3:
-                CinemaController cinemaController = CinemaController.getController();
-                ShowingController showingController = ShowingController.getController();
-                BookingController bookingController = BookingController.getController();
+                    break;
 
-                String cineplex;
-                boolean isCineplex = false;
-                int choice = -1;
+                case 3: // Make booking
+                    CinemaController cinemaController = CinemaController.getController();
+                    ShowingController showingController = ShowingController.getController();
+                    BookingController bookingController = BookingController.getController();
 
-                System.out.println("Which Cineplex do you want to view the movie from?");
+                    String cineplex = null;
+                    boolean isCineplex = false;
+                    int choice = -1;
 
-                //Prints Cineplex list for Users to choose from
-                for(String key : cinemaController.cineplexMap.keySet())
-                {
-                    System.out.println(key);
-                }
-                
-                //Checks if user input is a valid cineplex
-                while(!isCineplex)
-                {
-                    System.out.println("Choose a Cineplex: ");
-                    cineplex = sc.nextLine();
+                    System.out.println("Which Cineplex do you want to view the movie from?");
 
-                    for(String key : cinemaController.cineplexMap.keySet()){isCineplex = cineplex.compareTo(key) == 0 ? true : false;}                    
-                }
+                    //Prints Cineplex list for Users to choose from
+                    for(String key : cinemaController.cineplexMap.keySet())
+                    {
+                        System.out.println(key);
+                    }
+                    
+                    //Checks if user input is a valid cineplex
+                    while(!isCineplex)
+                    {
+                        System.out.println("Choose a Cineplex: ");
+                        cineplex = sc.nextLine();
 
-                ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);
+                        for(String key : cinemaController.cineplexMap.keySet()){isCineplex = cineplex.compareTo(key) == 0 ? true : false;}                    
+                    }
 
-                System.out.println("List of Showings at " + cineplex);
-                for(int i = 0; i < showingList.size(); i++)
-                {
-                    System.out.println((i+1) + ":" + showingList.get(i).getShowtime());
-                }
+                    ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);
 
-                while (choice > showingList.size() || choice < 0)
-                {
-                    System.out.println("Choose a showing: ");
-                    choice = sc.nextInt();
-                }
+                    System.out.println("List of Showings at " + cineplex);
+                    for(int i = 0; i < showingList.size(); i++)
+                    {
+                        System.out.println((i+1) + ":" + showingList.get(i).getShowtime());
+                    }
 
-                Showing chosenShowing = showingList.get(choice-1);
+                    while (choice > showingList.size() || choice < 0)
+                    {
+                        System.out.println("Choose a showing: ");
+                        choice = sc.nextInt();
+                    }
 
-                showingController.printCinema(chosenShowing);
+                    Showing chosenShowing = showingList.get(choice-1);
 
-                //TODO: Users choose a seat
+                    // User chooses seat
+                    showingController.setSeatingForShowing(chosenShowing);
+                    break;
 
-
-
-        } 
-    } while(option != 0);
+                default:
+                    System.out.println("Invalid option. Try again.");
+                    break;
+            } 
+        } while(option != 0);
     }
 
     public void viewTop5() {

@@ -17,7 +17,7 @@ public class AdminView{
         MovieController moviecontroller = MovieController.getController();
         ShowingController showingcontroller = ShowingController.getController();
         SettingsController settingscontroller = SettingsController.getController();
-        Cinema cinema = null;
+        CinemaController cinemaController = CinemaController.getController();
 
         int cont = 1;
         while(cont!=0){
@@ -44,7 +44,8 @@ public class AdminView{
                 case 1:
                     System.out.println("1. Add a holiday \n" + 
                                         "2. Delete a holiday \n" +
-                                        "2. Configure ticket prices \n");
+                                        "3. Configure ticket prices \n" + 
+                                        "4. Define cinema layout \n");
                     
                     while (!input.hasNextInt()){
                         System.out.println("Please input a number."); 
@@ -56,6 +57,7 @@ public class AdminView{
                     if (configOption == 1) settingscontroller.addHoliday();
                     else if (configOption == 2) settingscontroller.deleteHoliday();
                     else if (configOption == 3) settingscontroller.setNewPrice();
+                    else if (configOption == 4) cinemaController.defineLayout(getCinemaChoiceFromUser());
                     else System.out.println("Invalid option. Returning...");
                     break;
                 
@@ -124,21 +126,21 @@ public class AdminView{
                     break;
 
 
-                case 4: //view top 5 movies by sales/ratings
-                    
+                case 4: 
+                    moviecontroller.viewTop5();
                     break;
                 
                 case 5: // Add showing to a cinema
-                    cinema = getCinemaChoiceFromUser();
-                    showingcontroller.addShowing(cinema);
+                    Cinema cinemaToBeAdded = getCinemaChoiceFromUser();
+                    showingcontroller.addShowing(cinemaToBeAdded);
                     break;                    
                 case 6: // Edit showing to a cinema
-                    cinema = getCinemaChoiceFromUser();
-                    showingcontroller.editShowing(cinema);
+                    Cinema cinemaToBeEdited = getCinemaChoiceFromUser();
+                    showingcontroller.editShowing(cinemaToBeEdited);
                     break;
                 case 7: // Delete showing to a cinema
-                    cinema = getCinemaChoiceFromUser();
-                    showingcontroller.deleteShowing(cinema);
+                    Cinema cinemaToBeDeleted = getCinemaChoiceFromUser();
+                    showingcontroller.deleteShowing(cinemaToBeDeleted);
                     break;
 
                 case 8: //return to main menu.
@@ -148,6 +150,7 @@ public class AdminView{
                     MovieController.saveData();
                     ShowingController.saveData();
                     SettingsController.saveAllData();
+                    CinemaController.saveData();
                     cont=0;
                     break;
 
