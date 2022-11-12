@@ -373,12 +373,30 @@ public class ShowingController implements Serializable{
         return showingSelectionList;
     }
 
-    public static void saveData(ArrayList<Showing> showingObj){  
+    public ArrayList<Showing> listShowingsByCineplex(String cineplex)
+    {
+        ArrayList<Showing> result = new ArrayList<Showing>();
+        CinemaController cinemaController = CinemaController.getController();
+        ArrayList<Cinema> cinemas = cinemaController.cineplexMap.get(cineplex);
+        for (Showing s: showingList)
+        {
+            for (Cinema c : cinemas)
+            {
+                if (c.equals(s.getShowingCinema()))
+                {
+                    result.add(s);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static void saveData(){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
         
-            objectOut.writeObject(showingObj);
+            objectOut.writeObject(showingList);
             objectOut.close();
         } catch (Exception e) {
             System.out.println("Got an error while saving showing data: "+e);

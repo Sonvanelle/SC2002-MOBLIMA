@@ -1,7 +1,10 @@
 package controllers;
 
 import entities.Movie;
+import entities.MovieGoer;
 import entities.showingStatus;
+import entities.Cinema;
+import entities.Showing;
 
 import java.io.Serializable;
 import java.io.FileInputStream;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class MovieController implements Serializable{
     private static ArrayList<Movie> movieList;
@@ -54,21 +58,88 @@ public class MovieController implements Serializable{
     }
 
     public void editMovie(String movieName){
-        Movie movieToEdit;
-        for (int i=0; i<movieList.size(); i++){
-            if (movieList.get(i).getMovieName() == movieName){
+        Scanner sc = new Scanner(System.in);
+        Movie movieToEdit = null;
+        int i;
+        for (i=0; i<movieList.size(); i++){
+            if (movieList.get(i).getMovieName() == movieName){ 
                 movieToEdit = movieList.get(i);
+                break;
             }
         }
-
+        if (movieToEdit==null){System.out.println("No such movie found."); return;}
         System.out.println("What do you want to edit?" +
         "\n 1. Name" +
-        "\n 2. " + 
-        "\n 3." );
-        movieToEdit
+        "\n 2. Length" + 
+        "\n 3. Status" +
+        "\n 4. Synopsis" + 
+        "\n 5. Cast" + 
+        "\n 6. Director");
 
-        //TO DO: implement choices for editing the movie's metadata
+        while (!sc.hasNextInt()){System.out.println("Please input a valid number."); sc.next();}
+        int choice = sc.nextInt();
+        sc.nextLine();
+        switch (choice){
+            case 1:
+                System.out.println("Enter a new name for the movie: ");
+                movieToEdit.setMovieName(sc.nextLine());
+                break;
+            
+            case 2:
+                System.out.println("Enter a new length for the movie: ");
+                while (!sc.hasNextInt()){System.out.println("Please input a valid number."); sc.next();}
+                movieToEdit.setLength(sc.nextInt());
+                sc.nextLine();
+                break;
+            
+            case 3:
+                System.out.println("Enter a new showing status: \n"+ 
+                                        "1. COMING SOON \n" +
+                                        "2. PREVIEW \n" +
+                                        "3. NOW SHOWING \n" +
+                                        "4. END OF SHOWING \n" );
+                    int showstatus = sc.nextInt();
+                    sc.nextLine();
+                    switch (showstatus){
+                        case 1: movieToEdit.setStatus(showingStatus.COMING_SOON); break;
+                        case 2: movieToEdit.setStatus(showingStatus.PREVIEW); break;
+                        case 3: movieToEdit.setStatus(showingStatus.NOW_SHOWING); break;
+                        case 4: movieToEdit.setStatus(showingStatus.END_OF_SHOWING); break;
+                        default: System.out.println("Invalid option; defaulting to COMING SOON."); movieToEdit.setStatus(showingStatus.COMING_SOON); break;
+                    }
+                break;
+            
+            case 4:
+                System.out.println("Enter a new synopsis: ");
+                movieToEdit.setSynopsis(sc.nextLine());
+                break;
+            
+            case 5:
+                ArrayList<String> newCast = new ArrayList<String>();
+                while(true){
+                        System.out.println("Enter movie cast (format: Actor - Character); enter STOP to stop: ");
+                        String castName = sc.nextLine();
+                        if (castName.equals("STOP")) break;
+                        newCast.add(castName);
+                    }
+                movieToEdit.setCast(newCast);
+                break;
+            
+            case 6:
+                System.out.println("Enter a new director name: ");
+                movieToEdit.setDirector(sc.nextLine());
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+                break;
+        }        
+        movieList.set(i, movieToEdit);
+        return;
     }
+
+
+
 
     public ArrayList<Movie> getMovieList() {
         return movieList;
@@ -174,8 +245,6 @@ public class MovieController implements Serializable{
                     break;
             }
         } while(statusOption != 0);
-
-        sc.close();
     }
 
     // allows the user to select a movie from the chosen list
@@ -198,7 +267,6 @@ public class MovieController implements Serializable{
             // user inputs 0 and exits selector
             if (option == -1) {
                 System.out.println("Returning...");
-                sc.close();
                 return;
             }
             else if (option < 0 || option >= movieSelectionList.size()) {
@@ -214,15 +282,16 @@ public class MovieController implements Serializable{
         if (movieSelectionList.get(option).getStatus() == showingStatus.COMING_SOON) {
             // selection menu for movies that are COMING SOON, ie. movies unable to be booked
             System.out.println("This movie is coming soon!");
+
         } else {
             // selection menu for movies that are NOW SHOWING and PREVIEW, ie. movies able to be booked
-            movieActionList(movieSelectionList.get(option));
+            movieActionList(movieSelectionList.get(option), MovieGoerController.getController().getCurrentMovieGoer());
         }
         
     }
 
-    // for a user to view and leave reviews, make bookings
-    public void movieActionList(Movie selectedMovie) {
+    // menu for a (valid, logged-in) user to view and leave reviews, make bookings
+    public void movieActionList(Movie selectedMovie, MovieGoer movieGoer) {
         int option;
         Scanner sc = new Scanner(System.in);
 
@@ -246,11 +315,80 @@ public class MovieController implements Serializable{
 
         switch (option) {
             case 1:
-                // 
                 ReviewController.getController().listReviews(selectedMovie.getMovieName());
-        }
 
-        } while(option != 0);
+            case 2:
+                int rating;
+                String reviewBody;
+                System.out.printf("Leave a review for %s!\n", selectedMovie.getMovieName());
+                System.out.print("Enter your rating from 0-5: ");
+
+                // users can leave ratings in integers from 0-5
+                while (!sc.hasNextInt() && !(sc.nextInt() >= '0' && sc.nextInt() <= '5')) {
+                    System.out.println("Please input a number value between 0 to 5. ");
+                    sc.next();
+                }
+                
+                rating = sc.nextInt();
+                sc.nextLine();
+
+                // enter review body
+                System.out.print("What did you think about the movie? \nInput ENTER when done: ");
+                reviewBody = sc.nextLine();
+
+                ReviewController.getController().createReview(
+                    selectedMovie.getMovieName(), rating, reviewBody, movieGoer.getMovieGoerName());
+
+            case 3:
+                CinemaController cinemaController = CinemaController.getController();
+                ShowingController showingController = ShowingController.getController();
+                BookingController bookingController = BookingController.getController();
+
+                String cineplex;
+                boolean isCineplex = false;
+                int choice = -1;
+
+                System.out.println("Which Cineplex do you want to view the movie from?");
+
+                //Prints Cineplex list for Users to choose from
+                for(String key : cinemaController.cineplexMap.keySet())
+                {
+                    System.out.println(key);
+                }
+                
+                //Checks if user input is a valid cineplex
+                while(!isCineplex)
+                {
+                    System.out.println("Choose a Cineplex: ");
+                    cineplex = sc.nextLine();
+
+                    for(String key : cinemaController.cineplexMap.keySet()){isCineplex = cineplex.compareTo(key) == 0 ? true : false;}                    
+                }
+
+                ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);
+
+                System.out.println("List of Showings at " + cineplex);
+                for(int i = 0; i < showingList.size(); i++)
+                {
+                    System.out.println((i+1) + ":" + showingList.get(i).getShowtime());
+                }
+
+                while (choice > showingList.size() || choice < 0)
+                {
+                    System.out.println("Choose a showing: ");
+                    choice = sc.nextInt();
+                }
+
+                Showing chosenShowing = showingList.get(choice-1);
+
+                showingController.printCinema(chosenShowing);
+
+                //TODO: Users choose a seat
+
+
+
+        } 
+    } while(option != 0);
     }
 
     public void viewTop5() {
@@ -294,6 +432,9 @@ public class MovieController implements Serializable{
                         for (int i = 0; i < Math.min(top5List.size(), 5); i++) {
                             System.out.printf("%d. %s \n Sales: %d\n", (i+1), top5List.get(i).getMovieName(), top5List.get(i).getTicketSales());
                         }
+                        
+                        movieSelector(top5List);
+
                     } else {    
                         System.out.println("No movies match these terms.");
                         break;
@@ -315,6 +456,9 @@ public class MovieController implements Serializable{
                         for (int i = 0; i < Math.min(top5List.size(), 5); i++) {
                             System.out.printf("%d. %s \n Rating: %d\n", (i+1), top5List.get(i).getMovieName(), top5List.get(i).averageRating());
                         }
+
+                        movieSelector(top5List);
+
                     } else { 
                         System.out.println("No movies match these terms.");
                         break;
@@ -323,7 +467,7 @@ public class MovieController implements Serializable{
 
         } while(option != 0);
 
-        sc.close();
+    
     }
     
     public static void saveData(){

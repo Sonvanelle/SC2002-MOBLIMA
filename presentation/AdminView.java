@@ -1,9 +1,11 @@
 package presentation;
 
-import entities.MovieGoer;
+import entities.Cinema;
 import entities.Movie;
-import controllers.BookingController;
+import controllers.CinemaController;
 import controllers.MovieController;
+import controllers.ShowingController;
+import controllers.SettingsController;
 import entities.showingStatus;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -12,7 +14,11 @@ public class AdminView{
 
     public void printMenu(){
         Scanner input = new Scanner(System.in);
-        MovieController moviecontroller = new MovieController();
+        MovieController moviecontroller = MovieController.getController();
+        ShowingController showingcontroller = ShowingController.getController();
+        SettingsController settingscontroller = SettingsController.getController();
+        Cinema cinema = null;
+
         int cont = 1;
         while(cont!=0){
             System.out.println("Admin View \n" +
@@ -20,16 +26,37 @@ public class AdminView{
                                 "1. Configure system settings \n" +
                                 "2. Create a Movie Listing \n" +
                                 "3. Update a Movie Listing \n" +
-                                "4. Remove a Movie Listing \n" +
-                                "5. View top 5 movies by Sales/Ratings \n" +
-                                "6. Return to main menu \n" + 
+                                "4. View top 5 movies by Sales/Ratings \n" +
+                                "5. Add showing \n" +
+                                "6. Edit showing \n" +
+                                "7. Delete showing \n" +
+                                "8. Return to main menu \n" + 
                                 "------------"); 
 
+            while (!input.hasNextInt()){
+                System.out.println("Please input a number."); 
+                input.next();
+            }
             int option = input.nextInt();
             input.nextLine();
+
             switch(option){
                 case 1:
-                    //write code for getting/setting system settings from a txt file
+                    System.out.println("1. Add a holiday \n" + 
+                                        "2. Delete a holiday \n" +
+                                        "2. Configure ticket prices \n");
+                    
+                    while (!input.hasNextInt()){
+                        System.out.println("Please input a number."); 
+                        input.next();
+                    }
+                    int configOption = input.nextInt();
+                    input.nextLine();
+
+                    if (configOption == 1) settingscontroller.addHoliday();
+                    else if (configOption == 2) settingscontroller.deleteHoliday();
+                    else if (configOption == 3) settingscontroller.setNewPrice();
+                    else System.out.println("Invalid option. Returning...");
                     break;
                 
 
@@ -66,10 +93,11 @@ public class AdminView{
                         cast.add(castName);
                     }
                     moviecontroller.createMovie(movieName, movieMin, val, synopsis, director, cast);
+                    System.out.println("New movie: " + movieName + "created; maybe create some showings for it next!");
                     break;
                 
 
-                case 3: //update movie listing
+                case 3: //update a movie listing.
                     System.out.println("Printing all current movie names...");
                     ArrayList<Movie> movieList = moviecontroller.getMovieList();
                     for (int i=0; i<movieList.size(); i++){
@@ -94,19 +122,32 @@ public class AdminView{
                     if (choice == 1) moviecontroller.editMovie(name);
                     else if (choice == 0)
                     break;
-                
 
-                case 4: //remove a movie listing.
+
+                case 4: //view top 5 movies by sales/ratings
+                    
                     break;
                 
-
-                case 5: //view top 5 movies by sales/ratings
+                case 5: // Add showing to a cinema
+                    cinema = getCinemaChoiceFromUser();
+                    showingcontroller.addShowing(cinema);
+                    break;                    
+                case 6: // Edit showing to a cinema
+                    cinema = getCinemaChoiceFromUser();
+                    showingcontroller.editShowing(cinema);
                     break;
-                
-                
-                case 6: //return to main menu.
+                case 7: // Delete showing to a cinema
+                    cinema = getCinemaChoiceFromUser();
+                    showingcontroller.deleteShowing(cinema);
+                    break;
+
+                case 8: //return to main menu.
                     System.out.println("Exiting to main menu...");
-                    moviecontroller.saveData();
+
+                    //IMPORTANT!!!!!! SAVE ALL CONTROLLER DATA TO FILE WHEN EXITING A MENU.
+                    MovieController.saveData();
+                    ShowingController.saveData();
+                    SettingsController.saveAllData();
                     cont=0;
                     break;
 
@@ -118,5 +159,31 @@ public class AdminView{
         }
     }
 
+    private Cinema getCinemaChoiceFromUser() {
+        Scanner sc = new Scanner(System.in);
+        CinemaController cinemacontroller = new CinemaController();
+
+        // Print out all the cinemas for admin to choose which one gets the showing
+        cinemacontroller.listCinema();
+        System.out.println("Enter integer of cinema that you want to edit");
+
+        int cinemaId = -1;
+        while (true) {
+            while (!sc.hasNextInt()) {
+                System.out.println("Please input a number."); 
+                sc.next();
+            }
+            cinemaId = sc.nextInt();
+            sc.nextLine();
+
+            if (!cinemacontroller.checkCinemaIdExistsInCineplex(cinemaId)) { 
+                System.out.println("No such cinema exists.");
+            }
+            else {
+                return cinemacontroller.getCinemaById(cinemaId);
+            }
+        }
     }
+
+}
 

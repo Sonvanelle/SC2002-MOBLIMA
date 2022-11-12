@@ -6,7 +6,7 @@ import java.io.Serializable;
 public class Movie implements Comparable<Movie>, Serializable{
     private String movieName;
     private long movieMin;
-    private showingStatus status; //0: COMING SOON - 1: PREVIEW - 2: NOW SHOWING - 3: END OF SHOWING
+    private showingStatus status; //COMING_SOON, PREVIEW, NOW_SHOWING, END_OF_SHOWING
     private String synopsis;
     private String director;
     private ArrayList<String> cast;
@@ -107,8 +107,28 @@ public class Movie implements Comparable<Movie>, Serializable{
     } */
 
     // setters
+    public void setMovieName(String name){
+        this.movieName = name;
+    }
+
+    public void setLength(int length){
+        this.movieMin = length;
+    }
+
     public void setStatus(showingStatus status) {
         this.status = status;
+    }
+
+    public void setSynopsis(String synopsis){
+        this.synopsis = synopsis;
+    }
+
+    public void setDirector(String director){
+        this.director = director;
+    }
+
+    public void setCast(ArrayList<String> cast){
+        this.cast = cast;
     }
 
     /* public void addReview(Review newReview) {

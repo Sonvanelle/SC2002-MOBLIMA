@@ -38,52 +38,52 @@ public class BookingController implements Serializable{
         if (bookingHistory == null){
             System.out.println("No bookingHistory found; creating new file.");
             bookingHistory = new ArrayList<Booking>();
-            saveData(bookingHistory);
+            saveData();
         }
         return controllerInstance;
     }
 
+    public double getPrice(Booking booking)
+    {
+       Showing showing = booking.getShowing();
+       Seat seat = booking.getSeat();
+
+       double price = SettingsController.getController().getPrice(seat.getSeatType(), showing);
+       return price;
+    }
+
+
+
     /*
      * Create new Booking object and adds it to the booking history list
      */
-    public void createBooking(Showing showing, MovieGoer movieGoer, Seat seat, int cinemaID, int cineplexID) {
+    public void createBooking(Showing showing, MovieGoer movieGoer, Seat seat, int cinemaID, String cineplex) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatStr = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         String tid = now.format(formatStr);
         tid = showing.getShowingCinema().getCinemaID() + tid;
         
-        Booking booking = new Booking(tid, movieGoer, seat, showing, cineplexID, cineplexID);
+        Booking booking = new Booking(tid, movieGoer, seat, showing, cinemaID, cineplex);
         bookingHistory.add(booking);
     }
 
-    public void listBookingViaNumber(String movieGoerNumber){
+    public void listBookingViaAccount(MovieGoer movieGoer){
         if (bookingHistory.size()==0) {System.out.println("No bookings found."); return;}
         for (int i = 0; i < bookingHistory.size(); i++)
         {
-            if (bookingHistory.get(i).getMovieGoer().getMovieGoerNumber() == movieGoerNumber)
+            if (bookingHistory.get(i).getMovieGoer() == movieGoer)
             {   
-                System.out.println(bookingHistory.get(i).toString());
+                bookingHistory.get(i).printBooking();
             }
         }
     }
 
-    public void listBookingViaEmail(String movieGoerEmail){
-        if (bookingHistory.size()==0) {System.out.println("No bookings found."); return;}
-        for (int i = 0; i < bookingHistory.size(); i++)
-        {
-            if (bookingHistory.get(i).getMovieGoer().getEmailAddress() == movieGoerEmail)
-            {   
-                System.out.println(bookingHistory.get(i).toString());
-            }
-        }
-    }
-
-    public static void saveData(ArrayList<Booking> bookingObj){  
+    public static void saveData(){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
         
-            objectOut.writeObject(bookingObj);
+            objectOut.writeObject(bookingHistory);
             objectOut.close();
         } catch (IOException e) {
             System.out.println("Got an error while saving booking data: "+e);

@@ -8,19 +8,19 @@ public class Booking implements Serializable {
 	private MovieGoer movieGoer;
 	private Showing showing;
 	private int cinemaID;
-	private int cineplexID;
+	private String cineplex;
 	private LocalDateTime bookingTime;
 	private Seat seat;
 
 
-	public Booking(String TID, MovieGoer movieGoer, Seat seat, Showing showing, int cinemaID, int cineplexID)
+	public Booking(String TID, MovieGoer movieGoer, Seat seat, Showing showing, int cinemaID, String cineplex)
 	{
 		this.TID = TID;
 		this.movieGoer = movieGoer;
 		this.seat = seat;
 		this.showing = showing;
 		this.cinemaID = cinemaID;
-		this.cineplexID = cineplexID;
+		this.cineplex = cineplex;
 		this.seat.setOccupancy(true); 
 		this.bookingTime = LocalDateTime.now();
 	}
@@ -30,9 +30,9 @@ public class Booking implements Serializable {
 	{
 		System.out.printf("Booking Transaction ID: %s\n", TID);
 		System.out.printf("Booking timestamp: %s\n", bookingTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-		System.out.printf("Cineplex: %d\n", cineplexID);
+		System.out.printf("Cineplex: %d\n", cineplex);
 		System.out.printf("Cinema: %d\n", cinemaID);
-		System.out.printf("Moviegoer ID: %d\n", movieGoer.getMovieGoerNumber());
+		System.out.printf("Moviegoer name: %d\n", movieGoer.getMovieGoerName());
 		System.out.printf("Showing: %s at %d\n", showing.getMovie(), showing.getShowtime());
 		System.out.printf("Seat: %d-5d\n", seat.getRow(), seat.getCol());
 	}
@@ -64,9 +64,9 @@ public class Booking implements Serializable {
 		return this.cinemaID;
 	}
 
-	public int getCineplexID()
+	public String getCineplex()
 	{
-		return this.cineplexID;
+		return this.cineplex;
 	}
 
 	public LocalDateTime getBookingTime()
