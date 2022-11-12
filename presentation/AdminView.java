@@ -21,7 +21,7 @@ public class AdminView{
 
         int cont = 1;
         while(cont!=0){
-            System.out.println("Admin View \n" +
+            System.out.println("\nAdmin View \n" +
                                 "------------\n" +
                                 "1. Configure system settings \n" +
                                 "2. Create a Movie Listing \n" +

@@ -341,8 +341,9 @@ public class ShowingController implements Serializable{
 
         // Create the newShowing and add it to showingList
         Showing newShowing = new Showing(cinema, newShowTime, movieList.get(movieChoice));
-
-        return addShowingHelper(cinema, newShowing);
+        boolean flag = addShowingHelper(cinema, newShowing);
+        saveData();
+        return flag;
     }
 
     // Returns true if show successfully added without clashes
@@ -370,7 +371,7 @@ public class ShowingController implements Serializable{
         Scanner sc = new Scanner(System.in);
 
         // Print out all showings with indexes
-        System.out.println("List of showings:");
+        System.out.println("\nList of showings:");
         for (int i = 0; i < showingListForCinema.size(); i++) {
             Movie currentMovie = showingListForCinema.get(i).getMovie();
             System.out.printf("Movie %d: %-30s | %tT - %tT\n", i+1, showingListForCinema.get(i).getMovie().getMovieName(), showingListForCinema.get(i).getShowtime(), showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
@@ -383,6 +384,7 @@ public class ShowingController implements Serializable{
             System.out.printf("Error. Please enter a number from %d to %d: \n");
             index = sc.nextInt();
         }
+        index -= 1;
 
         // Let user choose which aspect of the showing they would like to change (either the movie, or show time)
         while (true) {
@@ -402,14 +404,14 @@ public class ShowingController implements Serializable{
                 }
                 // Get user's choice of new movie
                 System.out.println("\nEnter movie index you would like to change to: ");
-                int movieChoice = sc.nextInt();
-                movieChoice -= 1;
+                int movieChoice = sc.nextInt();                
                 while (movieChoice < 1 || movieChoice > movieList.size()) {
                     System.out.printf("Error. Enter an index from %d to %d: \n", 1, movieList.size());
                     movieChoice = sc.nextInt();
                 }
+                movieChoice -= 1;
                 // Change movie
-                showingListForCinema.get(index).setMovie(movieList.get(movieChoice));               
+                showingListForCinema.get(index).setMovie(movieList.get(movieChoice)); // Pretty sure showingListForCinema will work and that don't need to change to showingList              
 
             } else if (userChoice == 2) { // Edit showing's show time
                 System.out.println("\nEnter new show time in the format DD-MM-YYYY hh:mm");
@@ -432,7 +434,7 @@ public class ShowingController implements Serializable{
                 Showing newShowing = new Showing(cinema, newShowTime, showingListForCinema.get(index).getMovie()); 
                 Showing tempOldShowing = showingListForCinema.get(index);
                 
-                showingList.remove(showingList.get(index));
+                showingList.remove(showingListForCinema.get(index));
                 if (verifyNoShowingOverlaps(cinema, tempOldShowing)) {
                     addShowingHelper(cinema, newShowing);
                 }
@@ -451,29 +453,31 @@ public class ShowingController implements Serializable{
                 userChoice = sc.nextInt();
             }
         }
+        saveData();
     }
 
     public void deleteShowing(Cinema cinema) {
-        // TODO Doesn't delete showing
         ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema);
         Scanner sc = new Scanner(System.in);
 
-        // Print out all showings with indexes
-        System.out.println("List of showings:");
-        for (int i = 0; i < getShowingListByCinema(cinema).size(); i++) {
-            Movie currentMovie = showingList.get(i).getMovie();
-            System.out.printf("Movie %d: %-30s | %tT - %tT\n", i+1, showingList.get(i).getMovie().getMovieName(), showingList.get(i).getShowtime(), showingList.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+        // Print out all showings with indexes 
+        System.out.println("\nList of showings:");
+        for (int i = 0; i < showingListForCinema.size(); i++) {
+            Movie currentMovie = showingListForCinema.get(i).getMovie();
+            System.out.printf("Movie %d: %-30s | %tT - %tT\n", i+1, showingListForCinema.get(i).getMovie().getMovieName(), showingListForCinema.get(i).getShowtime(), showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
         }
 
         // Let user select index of showing they want to delete
         System.out.println("\nEnter index of showing you would like to delete: ");
         int index = sc.nextInt();
-        while (index < 1 || index > showingList.size()) {
+        while (index < 1 || index > showingListForCinema.size()) {
             System.out.printf("Error. Please enter a number from %d to %d: \n");
             index = sc.nextInt();
         }
+        index -= 1;
 
-        showingList.remove(index-1);
+        showingList.remove(showingListForCinema.get(index)); 
+        saveData();
     }
 
     // returns list of showings by movie
