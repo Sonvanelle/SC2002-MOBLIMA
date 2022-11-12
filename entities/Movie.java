@@ -4,6 +4,7 @@ import java.lang.Comparable;
 import java.io.Serializable;
 
 public class Movie implements Comparable<Movie>, Serializable{
+    // TODO movie type (blockbuster/3D) should be in this class?
     private String movieName;
     private long movieMin;
     private showingStatus status; //COMING_SOON, PREVIEW, NOW_SHOWING, END_OF_SHOWING
@@ -94,7 +95,7 @@ public class Movie implements Comparable<Movie>, Serializable{
         return reviews;
     }
 
-    public double getTicketSales() {
+    public Double getTicketSales() {
         return ticketSales;
     }
 

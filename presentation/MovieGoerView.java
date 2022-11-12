@@ -11,7 +11,13 @@ public class MovieGoerView {
     
     public void printMenu() {
         int option;
+        Boolean isLogin = false;
 		Scanner sc = new Scanner(System.in);
+
+        // init and create controller instances
+        BookingController bookingController = BookingController.getController();
+        MovieController movieController = MovieController.getController();
+        MovieGoerController movieGoerController = MovieGoerController.getController();
 
         /*
          * MAIN MENU of the movie-goer application
@@ -28,6 +34,8 @@ public class MovieGoerView {
                 "------------"
 			);
 
+            movieGoerController.printMovieGoers();
+
             System.out.print("Enter option: ");
             
             // reject non-integer input
@@ -41,92 +49,46 @@ public class MovieGoerView {
             switch(option) {
                 case 1:
                     // prompt for customer number or email, then log in and get the associated movieGoer object
-					int option2;
+					MovieGoer movieGoerCheck = null;
 
-					do {
-						System.out.println(
-                            "\nLog In\n" +
-                            "------------\n" +
-                            "Please select login method: \n" +
-                            "1. Email Address\n" +
-                            "2. Mobile Number\n" +
-                            "0. Back \n" +
-                            "------------\n"
-                        );
+                    while (movieGoerCheck == null) {
+                        System.out.print("Input your email address: ");
+                        String emailInput = sc.nextLine();
                         
-                        System.out.println("Enter option: ");
-
-                        while (!sc.hasNextInt()) {
-                            System.out.println("Please input a number value.");
-                            sc.next();
+                        // check for valid login - if the MovieGoer exists in the movieGoerList
+                        movieGoerCheck = movieGoerController.searchMovieGoerEmail(emailInput);
+                        if (movieGoerCheck != null) {
+                            // set current account to the one used to log in - account is held by the controller
+                            movieGoerController.setCurrentMovieGoer(movieGoerCheck);
+                            isLogin = true;
+                            continue;
+                        } else {
+                            System.out.println("Invalid email!");
                         }
-
-                        option2 = sc.nextInt();
-                        sc.nextLine();
-
-                        // temp account used to check for validity with the movieGoerList
-                        MovieGoer movieGoerCheck = null;
-
-                        switch(option2) {
-                            case 1:
-                                movieGoerCheck = null;
-
-                                while (movieGoerCheck == null) {
-                                    System.out.println("Input your email address: ");
-                                    String emailInput = sc.nextLine();
-
-                                    // check for valid login - if the MovieGoer exists in the movieGoerList
-                                    if (MovieGoerController.getController().searchMovieGoerEmail(emailInput) != null) {
-                                        movieGoerCheck = MovieGoerController.getController().searchMovieGoerEmail(emailInput);
-                                    } else {
-                                        
-                                    }
-                                }
-                                
-                                // set current account to the one used to log in - account is held by the controller
-                                MovieGoerController.getController().setCurrentMovieGoer(movieGoerCheck);
-                                break;
-                            
-                            case 2:
-                                movieGoerCheck = null;
-
-                                while (movieGoerCheck == null) {
-                                    System.out.println("Input your phone number: ");
-                                String numberInput = sc.nextLine();
-
-                                    // check for valid login
-                                    if (MovieGoerController.getController().searchMovieGoerNumber(numberInput) != null) {
-                                        movieGoerCheck = MovieGoerController.getController().searchMovieGoerNumber(numberInput);
-                                    }
-                                }
-                                
-                                // set current account to the one used to log in
-                                MovieGoerController.getController().setCurrentMovieGoer(movieGoerCheck);
-                                break;
-
-                            case 0:
-                                System.out.println("Navigating back to movie-goer view.");
-                                break;
-
-                            default:
-                                System.out.println("Please input an option from 1 to 2.");
-                                break;
-					    }
-
-                    } while(option2 != 0);
-
+                    }         
+                    break;
+                    
                 case 2:
                     // create movieGoer object 
-                    MovieGoer newAccount = MovieGoerController.getController().createMovieGoerHelper();
+                    MovieGoer newAccount = movieGoerController.createMovieGoerHelper();
+
+                    System.out.println("New Account Details:\n");
+                    System.out.printf("Name:" + newAccount.getMovieGoerName() + "\n" +
+                        "Number:" + newAccount.getMovieGoerNumber() + "\n" +
+                        "Email:" + newAccount.getEmailAddress() + "\n");
 
                     // add the movieGoer object to the list and use this account for the current session
-                    MovieGoerController.getController().createMovieGoer(newAccount);
-                    MovieGoerController.getController().setCurrentMovieGoer(newAccount);
+                    movieGoerController.createMovieGoer(newAccount);
+                    movieGoerController.setCurrentMovieGoer(newAccount);
+
+                    movieGoerController.printMovieGoers();
+                    break;
 
                 case 0:
-                    System.out.println("Navigating back to main application view.");
+                    System.out.println("Navigating back to the movie-goer menu.");
+
                     // reset the currently-loaded movieGoer account
-                    MovieGoerController.getController().resetCurrentMovieGoer();
+                    movieGoerController.resetCurrentMovieGoer();
 
                     // save all the serializables in the controllers
                     MovieGoerController.saveData();
@@ -139,14 +101,14 @@ public class MovieGoerView {
                     break;
             }
             
-        } while(option != 0);
+        } while(option != 0 && !isLogin);
 
         /*
          * this menu is printed AFTER user has successfully logged in or created an account
          */ 
         do {
             System.out.println(
-                "\nWelcome, " + MovieGoerController.getController().getCurrentMovieGoer().getMovieGoerName() + "!\n" + 
+                "\nWelcome, " + movieGoerController.getCurrentMovieGoer().getMovieGoerName() + "!\n" + 
                 "------------\n" +
 				"1. View Booking History \n" +
 				"2. View Top 5 Movies \n" +
@@ -155,7 +117,7 @@ public class MovieGoerView {
                 "------------"
 			);
 
-            System.out.print("Enter option: ");
+            System.out.println("Enter option: ");
             
             // reject non-integer input
             while (!sc.hasNextInt()) {
@@ -172,16 +134,17 @@ public class MovieGoerView {
                         "------------\n");
 
                     // pass the current movieGoer object to the BookingController
-                    BookingController.getController().listBookingViaAccount(
-                        MovieGoerController.getController().getCurrentMovieGoer());             
+                    bookingController.listBookingViaAccount(
+                        movieGoerController.getCurrentMovieGoer());     
+                    break;        
 
                 case 2:
-                    MovieController.getController().viewTop5();
+                    movieController.viewTop5();
                     break;
                 
                 // use the view movies method as an entry to book movies
                 case 3:
-                    MovieController.getController().printMovieListByStatus();
+                    movieController.printMovieListByStatus();
                     break;
                     
                 case 0:
@@ -191,9 +154,8 @@ public class MovieGoerView {
                 default:
                     System.out.println("Invalid option.");
                     break;
-
 			}
         
-        } while(option != 0 || MovieGoerController.getController().getCurrentMovieGoer() != null);
+        } while(option != 0 || movieGoerController.getCurrentMovieGoer() != null);
     }
 }

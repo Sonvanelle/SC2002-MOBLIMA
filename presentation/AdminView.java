@@ -17,7 +17,7 @@ public class AdminView{
         MovieController moviecontroller = MovieController.getController();
         ShowingController showingcontroller = ShowingController.getController();
         SettingsController settingscontroller = SettingsController.getController();
-        CinemaController cinemaController = CinemaController.getController();
+        CinemaController cinemacontroller = CinemaController.getController();
 
         int cont = 1;
         while(cont!=0){
@@ -44,9 +44,11 @@ public class AdminView{
                 case 1:
                     System.out.println("1. Add a holiday \n" + 
                                         "2. Delete a holiday \n" +
-                                        "3. Configure ticket prices \n" + 
-                                        "4. Define cinema layout \n");
-                    
+                                        "3. Configure ticket prices \n" +
+                                        "4. Add cinema \n" + 
+                                        "5. Define cinema layout \n" +
+                                        "6. Return to admin menu \n");
+
                     while (!input.hasNextInt()){
                         System.out.println("Please input a number."); 
                         input.next();
@@ -57,7 +59,78 @@ public class AdminView{
                     if (configOption == 1) settingscontroller.addHoliday();
                     else if (configOption == 2) settingscontroller.deleteHoliday();
                     else if (configOption == 3) settingscontroller.setNewPrice();
-                    else if (configOption == 4) cinemaController.defineLayout(getCinemaChoiceFromUser());
+                    else if (configOption == 4) {
+
+                        // Prints Cineplex hashmap
+                        ArrayList<Cinema> cinemaList = new ArrayList<Cinema>();
+                        for(String key : CinemaController.cineplexMap.keySet())
+                        {
+                            cinemaList = CinemaController.cineplexMap.get(key);
+                            for (Cinema c : cinemaList) {
+                                System.out.println(key + ": Cinema " + c.getCinemaID());
+                                System.out.println(c.getClassType() + ", " + c.getRows() + "x" +c.getColumns() + '\n');   
+                            }
+                        }
+
+                        System.out.println("Enter cineplex name: ");
+                        String cineplex = input.nextLine().toUpperCase();           
+                        
+                        // Prompt for cinema id
+                        System.out.println("Enter cinema ID: ");
+                        while (!input.hasNextInt()) {
+                            System.out.println("Please input a number."); 
+                            input.next();
+                        }
+                        int cinemaId = input.nextInt();
+                        input.nextLine();
+
+                        // Prompt for cinema type
+                        System.out.println("1. NORMAL");
+                        System.out.println("2. GOLDEN");
+                        System.out.println("3. PLATINUM");
+                        System.out.println("Enter cinema type");
+                        while (!input.hasNextInt()) {
+                            System.out.println("Please input a number."); 
+                            input.next();
+                        }
+                        int cinemaTypeInt = input.nextInt();
+                        input.nextLine();
+                        Cinema.classType cinemaType = null;
+                        if (cinemaTypeInt == 1) {
+                            cinemaType = Cinema.classType.NORMAL;
+                        }
+                        else if (cinemaTypeInt == 2) {
+                            cinemaType = Cinema.classType.GOLDEN;
+                        }
+                        else if (cinemaTypeInt == 3) {
+                            cinemaType = Cinema.classType.PLATINUM;
+                        }
+                        else {
+                            System.out.println("Invalid input. Defaulted to normal cinema type.");
+                            cinemaType = Cinema.classType.NORMAL;
+                        }
+                            
+                        // Prompt for number of rows and cols
+                        System.out.println("Enter number of rows");
+                        while (!input.hasNextInt()) {
+                            System.out.println("Please input a number."); 
+                            input.next();
+                        }
+                        int rows = input.nextInt();
+                        input.nextLine();
+
+                        System.out.println("Enter number of columns");
+                        while (!input.hasNextInt()) {
+                            System.out.println("Please input a number."); 
+                            input.next();
+                        }
+                        int cols = input.nextInt();
+                        input.nextLine();
+                            
+                        cinemacontroller.createCinema(cineplex, cinemaId, cinemaType, rows, cols);
+                    }
+                    else if (configOption == 5) cinemacontroller.defineLayout(getCinemaChoiceFromUser());
+                    else if (configOption == 6) {System.out.println("Returning..."); break;}
                     else System.out.println("Invalid option. Returning...");
                     break;
                 
@@ -95,7 +168,9 @@ public class AdminView{
                         cast.add(castName);
                     }
                     moviecontroller.createMovie(movieName, movieMin, val, synopsis, director, cast);
-                    System.out.println("New movie: " + movieName + "created; maybe create some showings for it next!");
+                    System.out.println("New movie: " + movieName + " created; maybe create some showings for it next!");
+                    MovieController.saveData();
+                    moviecontroller.printMovieList(moviecontroller.getMovieList());
                     break;
                 
 
@@ -123,6 +198,8 @@ public class AdminView{
 
                     if (choice == 1) moviecontroller.editMovie(name);
                     else if (choice == 0)
+                    MovieController.saveData();
+                    moviecontroller.printMovieList(moviecontroller.getMovieList());
                     break;
 
 
@@ -146,7 +223,7 @@ public class AdminView{
                 case 8: //return to main menu.
                     System.out.println("Exiting to main menu...");
 
-                    //IMPORTANT!!!!!! SAVE ALL CONTROLLER DATA TO FILE WHEN EXITING A MENU.
+                    //Save all controller's data to file when exiting this module.
                     MovieController.saveData();
                     ShowingController.saveData();
                     SettingsController.saveAllData();
@@ -166,9 +243,32 @@ public class AdminView{
         Scanner sc = new Scanner(System.in);
         CinemaController cinemacontroller = new CinemaController();
 
-        // Print out all the cinemas for admin to choose which one gets the showing
-        cinemacontroller.listCinema();
-        System.out.println("Enter integer of cinema that you want to edit");
+        // Prints Cineplex hashmap
+        ArrayList<Cinema> cinemaList = new ArrayList<Cinema>();
+        for(String key : CinemaController.cineplexMap.keySet())
+        {
+            cinemaList = CinemaController.cineplexMap.get(key);
+            for (Cinema c : cinemaList) {
+                System.out.println(key + ": Cinema " + c.getCinemaID());
+                System.out.println(c.getClassType() + ", " + c.getRows() + "x" +c.getColumns() + '\n');   
+            }
+        }
+
+        System.out.println("Which Cineplex do you want to view the movie from?");
+        boolean isCineplex = false; 
+        //Checks if user input is a valid cineplex
+        while(!isCineplex)
+        {
+            System.out.println("Choose a Cineplex: ");
+            String cineplex = sc.nextLine();
+
+            for(String key : CinemaController.cineplexMap.keySet()){
+                isCineplex = cineplex.compareTo(key) == 0 ? true : false;
+                if (isCineplex) {break;}
+            }                    
+        }
+
+        System.out.println("Enter integer of cinema that you want to edit: ");
 
         int cinemaId = -1;
         while (true) {

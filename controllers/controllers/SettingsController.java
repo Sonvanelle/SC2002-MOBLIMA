@@ -67,7 +67,7 @@ public class SettingsController implements Serializable{
             cinemaPrices = new HashMap<Cinema.classType, Double>();
 
             for (Cinema.classType cinema : Cinema.classType.values()){
-                System.out.println("Input an addition price for the cinema type: ");
+                System.out.println("Input an addition price for the cinema type: " + cinema);
                 while (!sc.hasNextDouble()){System.out.println("Input a valid number."); sc.next();}
                 cinemaPrices.put(cinema, sc.nextDouble());
                 sc.nextLine();
@@ -78,7 +78,7 @@ public class SettingsController implements Serializable{
     }
 
 
-    //getters
+
     public ArrayList<LocalDate> getHolidays(){
         return holidays;
     }
@@ -116,6 +116,7 @@ public class SettingsController implements Serializable{
         LocalDate newHoliday = LocalDate.of(year, month, day);
         holidays.add(newHoliday);
         System.out.println("Added new holiday: " + newHoliday);
+        saveAllData();
         return;
     }
 
@@ -139,6 +140,7 @@ public class SettingsController implements Serializable{
         }
         System.out.println("Deleted: " + holidays.get(index));
         holidays.remove(index);
+        saveAllData();
         return;
     }
 
@@ -165,6 +167,7 @@ public class SettingsController implements Serializable{
             }
         }
         if (found==0) System.out.println("No such seat type was found.");
+        saveAllData();
         return;
     }
 
@@ -208,7 +211,4 @@ public class SettingsController implements Serializable{
             return null;
         }        
     }
-
-
-
 }

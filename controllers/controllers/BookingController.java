@@ -52,8 +52,6 @@ public class BookingController implements Serializable{
        return price;
     }
 
-
-
     /*
      * Create new Booking object and adds it to the booking history list
      */
@@ -65,6 +63,7 @@ public class BookingController implements Serializable{
         
         Booking booking = new Booking(tid, movieGoer, seat, showing, cinemaID, cineplex);
         bookingHistory.add(booking);
+        saveData();
     }
 
     public void listBookingViaAccount(MovieGoer movieGoer){

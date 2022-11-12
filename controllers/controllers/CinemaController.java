@@ -34,7 +34,7 @@ public class CinemaController implements Serializable {
         if (controllerInstance == null) {
             controllerInstance = new CinemaController();
         }
-        cineplexMap = (HashMap<String, ArrayList<Cinema>>)loadData();
+        cineplexMap = (HashMap<String, ArrayList<Cinema>>) loadData();
         if (cineplexMap==null){
             System.out.println("No cineplexMap found; creating new file.");
             cineplexMap = new HashMap<String, ArrayList<Cinema>>();
@@ -48,6 +48,7 @@ public class CinemaController implements Serializable {
         ArrayList<Cinema> existing = cineplexMap.containsKey(cineplex) ? cineplexMap.get(cineplex) : new ArrayList<Cinema>();
         existing.add(cinema);
         cineplexMap.put(cineplex, existing);
+        saveData();
     }
 
     public void listCinema(){
@@ -157,6 +158,7 @@ public class CinemaController implements Serializable {
                 userChoice = sc.nextInt();
             }
         }
+        saveData();
     }
 
     public void defineLayoutHelperDefineSeatType(Cinema cinema, seatType sType, boolean defaultLayoutFlag) {
@@ -394,6 +396,7 @@ public class CinemaController implements Serializable {
 
             objectOut.writeObject(cineplexMap);
             objectOut.close();
+            System.out.println("Saved cineplex data.");
         } catch (Exception e) {
             System.out.println("Got an error while saving cineplexes data: "+e);
             //e.printStackTrace();

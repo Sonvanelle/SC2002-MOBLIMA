@@ -119,7 +119,7 @@ public class ShowingController implements Serializable{
         System.out.print(" " + rowLetter + "\n\n");
     }
 
-    public void setSeatingForShowing(Showing showing) {
+    public Seat setSeatingForShowing(Showing showing) {
         
         Scanner sc = new Scanner(System.in);
 
@@ -143,7 +143,9 @@ public class ShowingController implements Serializable{
         // Set occupancy of specific seat element in seating (ArrayList<Seat>) in the Showing object to true 
         int seatIndex = findSeatIndexByRowAndCol(showing, seatPosRow, seatPosCol);
         showing.getSeating().get(seatIndex).setOccupancy(true);
-
+        
+        saveData();
+        return showing.getSeating().get(seatIndex);
     }
 
     public boolean validateSeatSelection(Showing showing, String seatPos) {
@@ -322,12 +324,14 @@ public class ShowingController implements Serializable{
             System.out.printf("Movie %d: %s\n", i+1, movieList.get(i).getMovieName());
         }
         // Get movie choice from admin
-        System.out.println("Enter movie index you would you like to change to: ");
+        System.out.println("Enter movie index: ");
         int movieChoice = sc.nextInt();
         while (movieChoice < 1 || movieChoice > movieList.size()) {
             System.out.printf("Error. Enter an index from %d to %d: \n", 1, movieList.size());
             movieChoice = sc.nextInt();
         }
+        movieChoice -= 1;
+        
         // Get showtime from admin
         System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -391,7 +395,7 @@ public class ShowingController implements Serializable{
                     movieChoice = sc.nextInt();
                 }
                 // Change movie
-                showingList.get(index).setMovie(movieList.get(movieChoice));               
+                showingList.get(index).setMovie(movieList.get(movieChoice - 1));               
 
             } else if (userChoice == 2) { // Edit showing's show time
                 System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm");
@@ -454,7 +458,7 @@ public class ShowingController implements Serializable{
             index = sc.nextInt();
         }
 
-        showingList.remove(index);
+        showingList.remove(index-1);
     }
 
     // returns list of showings by movie

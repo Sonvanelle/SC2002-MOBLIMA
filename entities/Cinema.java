@@ -1,9 +1,9 @@
 package entities;
 import java.util.ArrayList;
-
+import java.io.Serializable;
 import entities.Seat.seatType;
 
-public class Cinema {
+public class Cinema implements Serializable{
     public enum classType {
         PLATINUM, GOLDEN, NORMAL
     }

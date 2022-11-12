@@ -2,6 +2,7 @@ package controllers;
 
 import entities.Movie;
 import entities.MovieGoer;
+import entities.Seat;
 import entities.showingStatus;
 import entities.Cinema;
 import entities.Showing;
@@ -137,9 +138,6 @@ public class MovieController implements Serializable{
         movieList.set(i, movieToEdit);
         return;
     }
-
-
-
 
     public ArrayList<Movie> getMovieList() {
         return movieList;
@@ -354,18 +352,23 @@ public class MovieController implements Serializable{
                     System.out.println("Which Cineplex do you want to view the movie from?");
 
                     //Prints Cineplex list for Users to choose from
-                    for(String key : cinemaController.cineplexMap.keySet())
+                    for(String key : CinemaController.cineplexMap.keySet())
                     {
                         System.out.println(key);
                     }
-                    
+                                     
                     //Checks if user input is a valid cineplex
                     while(!isCineplex)
                     {
                         System.out.println("Choose a Cineplex: ");
-                        cineplex = sc.nextLine();
+                        cineplex = sc.nextLine().toUpperCase();
 
-                        for(String key : cinemaController.cineplexMap.keySet()){isCineplex = cineplex.compareTo(key) == 0 ? true : false;}                    
+                        for (String key : CinemaController.cineplexMap.keySet())
+                        {
+                            isCineplex = (key.compareTo(cineplex) == 0) ? true : false;
+                            if (isCineplex){break;}
+                        }
+                        // isCineplex = CinemaController.cineplexMap.containsKey(cineplex);     
                     }
 
                     ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);
@@ -384,8 +387,12 @@ public class MovieController implements Serializable{
 
                     Showing chosenShowing = showingList.get(choice-1);
 
-                    // User chooses seat
-                    showingController.setSeatingForShowing(chosenShowing);
+                    // User chooses seat - seats will be set as occupied for the chosen showing
+                    Seat chosenSeat = showingController.setSeatingForShowing(chosenShowing);
+
+                    // creates and saves booking object with the chosen parameters
+                    bookingController.createBooking(chosenShowing, movieGoer, chosenSeat, 
+                        chosenShowing.getShowingCinema().getCinemaID(), cineplex);
                     break;
 
                 default:
@@ -418,8 +425,8 @@ public class MovieController implements Serializable{
             sc.nextLine();
 
             // after selection, fill the array list based on the selected parameters
+            
             ArrayList<Movie> top5List = new ArrayList<Movie>();
-
             switch (option) {
                 case 1:
                     // returns first 5 entries of preview and showing movies, sorted by sales numbers
@@ -434,7 +441,7 @@ public class MovieController implements Serializable{
                     
                     if (top5List.size() != 0) {
                         for (int i = 0; i < Math.min(top5List.size(), 5); i++) {
-                            System.out.printf("%d. %s \n Sales: %d\n", (i+1), top5List.get(i).getMovieName(), top5List.get(i).getTicketSales());
+                            System.out.printf("%d. %s \n Sales: %f\n", (i+1), top5List.get(i).getMovieName(), top5List.get(i).getTicketSales());
                         }
                         
                         movieSelector(top5List);
@@ -443,9 +450,11 @@ public class MovieController implements Serializable{
                         System.out.println("No movies match these terms.");
                         break;
                     }
+                    break;
 
                 case 2: 
                     // returns first 5 entries of preview and showing movies, sorted by review ratings
+            
                     for (int i = 0; i < movieList.size(); i++) {
                         if (movieList.get(i).getStatus().isEqual("NOW_SHOWING") ||
                             movieList.get(i).getStatus().isEqual("PREVIEW")) {
@@ -458,7 +467,7 @@ public class MovieController implements Serializable{
 
                     if (top5List.size() != 0) {
                         for (int i = 0; i < Math.min(top5List.size(), 5); i++) {
-                            System.out.printf("%d. %s \n Rating: %d\n", (i+1), top5List.get(i).getMovieName(), top5List.get(i).averageRating());
+                            System.out.printf("%d. %s \n Rating: %.2f\n", (i+1), top5List.get(i).getMovieName(), top5List.get(i).averageRating());
                         }
 
                         movieSelector(top5List);
@@ -467,7 +476,9 @@ public class MovieController implements Serializable{
                         System.out.println("No movies match these terms.");
                         break;
                     }
+                    break;
             }
+            top5List = null;
 
         } while(option != 0);
 

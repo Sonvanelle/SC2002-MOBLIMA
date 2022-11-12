@@ -139,14 +139,13 @@ public class MovieGoerController implements Serializable {
 
     // checks movieGoer list for this email, returns the associated movieGoer object
     public MovieGoer searchMovieGoerEmail(String email) {
-        System.out.println("Searching for account..\n");
+        System.out.printf("Searching for account..\n");
         
         for (MovieGoer m : movieGoerList) {
-            if (m.getEmailAddress() == email) {
+            if (m.getEmailAddress().equals(email)) {
                 return m;
             }
         }
-
         return null;
     }
 
@@ -155,12 +154,22 @@ public class MovieGoerController implements Serializable {
         System.out.println("Searching for mobile no..\n");
         
         for (MovieGoer m : movieGoerList) {
-            if (m.getMovieGoerNumber() == number) {
+            if (m.getMovieGoerNumber().equals(number)) {
                 return m;
             }
         }
-        
         return null;
+    }
+
+    // testing method for printing movieGoer List
+    public void printMovieGoers() {
+        System.out.print("Printing all accounts..\n");
+        for (int i = 0; i < movieGoerList.size(); i++) {
+            System.out.printf((i+1) + ". " + movieGoerList.get(i).getMovieGoerName() + "\n" +
+            movieGoerList.get(i).getEmailAddress() + "\n" +
+            movieGoerList.get(i).getMovieGoerNumber() + "\n" +
+            movieGoerList.get(i).getMovieGoerAge() + "\n" );
+        }
     }
 
     public static void saveData(){  
