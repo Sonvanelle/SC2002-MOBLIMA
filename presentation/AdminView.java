@@ -260,7 +260,7 @@ public class AdminView{
             }
         }
 
-        System.out.println("Which Cineplex do you want to view the movie from?");
+        System.out.println("Which Cineplex ?");// changed because it doesnt make sense in delete showing
         boolean isCineplex = false; 
         String cineplex = null;
         //Checks if user input is a valid cineplex

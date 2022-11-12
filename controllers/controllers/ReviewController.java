@@ -36,6 +36,12 @@ public class ReviewController implements Serializable{
 
     public void listReviews(String movieName)
     {
+        if(reviewList.size()==0) {
+            System.out.println("There is currently no reviews for this movie yet");
+            
+            return;
+        }
+    
         for (int i = 0; i < reviewList.size(); i++){
             if (reviewList.get(i).getMovieName() == movieName)
             {

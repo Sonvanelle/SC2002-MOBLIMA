@@ -418,7 +418,7 @@ public class ShowingController implements Serializable{
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                 boolean validDateTime = false;
                 LocalDateTime newShowTime = null; 
-
+                sc.nextLine();
                 // Validate date and time input
                 while (!validDateTime) {
                     try {
@@ -434,17 +434,10 @@ public class ShowingController implements Serializable{
                 Showing newShowing = new Showing(cinema, newShowTime, showingListForCinema.get(index).getMovie()); 
                 Showing tempOldShowing = showingListForCinema.get(index);
                 
-                showingList.remove(showingListForCinema.get(index));
-                if (verifyNoShowingOverlaps(cinema, tempOldShowing)) {
-                    addShowingHelper(cinema, newShowing);
+                if (addShowingHelper(cinema, newShowing)){
+                    showingList.remove(tempOldShowing);
+                    System.out.println("Showing successfully edited");
                 }
-
-                if (addShowingHelper(cinema, newShowing) == false) { 
-                    showingList.add(index, tempOldShowing);
-                    System.out.println("Error - Clash of show time");
-                }
-                System.out.println("Showing successfully edited");
-
             } else if (userChoice == 0) {
                 break;
 

@@ -394,7 +394,8 @@ public class MovieController implements Serializable{
                     bookingController.createBooking(chosenShowing, movieGoer, chosenSeat, 
                         chosenShowing.getShowingCinema().getCinemaID(), cineplex);
                     break;
-
+                case 0:// wont print invalid option on first 0.
+                    break;
                 default:
                     System.out.println("Invalid option. Try again.");
                     break;
