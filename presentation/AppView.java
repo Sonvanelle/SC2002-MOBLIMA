@@ -2,6 +2,12 @@ package presentation;
 
 import java.util.Scanner;
 
+/**
+ * Main driver class that allows the user to choose between the admin and
+ * moviegoer modes
+ * depending on the user's choice, it calls
+ * methods from the appropriate controller class.
+ */
 public class AppView {
 	public static void main(String[] args) {
 		int option;

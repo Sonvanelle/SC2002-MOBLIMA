@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.io.Serializable;
 import entities.Seat.seatType;
 
+/**
+ * Cinema is a class that represents a cinema in a cineplex
+ * Contains the cinemaID, classType, seatingPlan, row, column, and cineplex
+ */
 public class Cinema implements Serializable {
     public enum classType {
         PLATINUM, GOLDEN, NORMAL
@@ -34,7 +38,7 @@ public class Cinema implements Serializable {
         }
     }
 
-    // Accessor
+    // Getters
     public int getCinemaID() {
         return this.cinemaID;
     }
@@ -51,12 +55,6 @@ public class Cinema implements Serializable {
         return this.seatingPlan;
     }
 
-    /*
-     * public ArrayList<Showing> getShowingList() {
-     * return this.showingList;
-     * }
-     */
-
     public int getColumns() {
         return this.column;
     }
@@ -65,7 +63,7 @@ public class Cinema implements Serializable {
         return this.row;
     }
 
-    // Mutators
+    // Setters
     public void setCinemaID(int cinemaID) {
         this.cinemaID = cinemaID;
     }

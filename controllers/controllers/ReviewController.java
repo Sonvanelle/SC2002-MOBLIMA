@@ -14,6 +14,9 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
+/**
+ * It's a controller class that handles the reviews for movies
+ */
 public class ReviewController implements Serializable {
     private static ArrayList<Review> reviewList;
     private static ReviewController controllerInstance = null;
@@ -34,9 +37,15 @@ public class ReviewController implements Serializable {
         return controllerInstance;
     }
 
-    public void createReview(String movieName, int rating, String comments, String reviewer) { // TODO review does not
-                                                                                               // increase in size at
-                                                                                               // all.
+    /**
+     * This function creates a new review object and adds it to the review list
+     * 
+     * @param movieName String
+     * @param rating    1-5
+     * @param comments  String
+     * @param reviewer  the name of the person who is reviewing the movie
+     */
+    public void createReview(String movieName, int rating, String comments, String reviewer) {
         Review review = new Review(movieName, rating, comments, reviewer);
 
         // add review to list
@@ -47,6 +56,11 @@ public class ReviewController implements Serializable {
         saveData();
     }
 
+    /**
+     * This function will print out all the reviews for a movie
+     * 
+     * @param movieName The name of the movie to list reviews for
+     */
     public void listReviews(String movieName) {
         if (reviewList.size() == 0) {
             System.out.println("There is currently no reviews for this movie yet");
@@ -64,6 +78,9 @@ public class ReviewController implements Serializable {
         }
     }
 
+    /**
+     * It writes the reviewList object to a file
+     */
     public static void saveData() {
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
@@ -72,10 +89,16 @@ public class ReviewController implements Serializable {
             objectOut.writeObject(reviewList);
             objectOut.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Exception caught while saving reviewList: " + e);
+            return;
         }
     }
 
+    /**
+     * It reads the reviewList file at the filepath, and returns the object
+     * 
+     * @return The reviewList object that was saved in the file.
+     */
     public static Object loadData() {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
@@ -85,7 +108,7 @@ public class ReviewController implements Serializable {
             objectIn.close();
             return obj;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Exception caught while loading reviewList: " + e);
             return null;
         }
     }

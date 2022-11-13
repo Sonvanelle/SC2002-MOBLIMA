@@ -1,9 +1,9 @@
 package entities;
 
 public enum showingStatus {
-    COMING_SOON("COMING SOON"), 
-    PREVIEW("PREVIEW"), 
-    NOW_SHOWING("NOW_SHOWING"), 
+    COMING_SOON("COMING SOON"),
+    PREVIEW("PREVIEW"),
+    NOW_SHOWING("NOW_SHOWING"),
     END_OF_SHOWING("END_OF_SHOWING");
 
     private final String nameText;

@@ -15,6 +15,11 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * It's a controller class that handles the creation of bookings, and also
+ * handles the saving and
+ * loading of booking data
+ */
 public class BookingController implements Serializable {
 
     private static final String filepath = "bookinghistory.ser"; // testing purposes
@@ -44,6 +49,12 @@ public class BookingController implements Serializable {
         return controllerInstance;
     }
 
+    /**
+     * This function gets the price of a booking
+     * 
+     * @param booking the booking object
+     * @return The price of the booking.
+     */
     public double getPrice(Booking booking) {
         Showing showing = booking.getShowing();
         Seat seat = booking.getSeat();
@@ -52,8 +63,15 @@ public class BookingController implements Serializable {
         return price;
     }
 
-    /*
-     * Create new Booking object and adds it to the booking history list
+    /**
+     * This function creates a booking object and adds it to the booking history
+     * list
+     * 
+     * @param showing   Showing object
+     * @param movieGoer MovieGoer object
+     * @param seat      Seat
+     * @param cinemaID  int
+     * @param cineplex  String
      */
     public void createBooking(Showing showing, MovieGoer movieGoer, Seat seat, int cinemaID, String cineplex) {
         LocalDateTime now = LocalDateTime.now();
@@ -70,18 +88,26 @@ public class BookingController implements Serializable {
         saveData();
     }
 
+    /**
+     * This function is used to list all the bookings made by a moviegoer
+     * 
+     * @param movieGoer the moviegoer who is making the booking
+     */
     public void listBookingViaAccount(MovieGoer movieGoer) {
         if (bookingHistory.size() == 0) {
             System.out.println("No bookings found.");
             return;
         }
         for (int i = 0; i < bookingHistory.size(); i++) {
-            if (bookingHistory.get(i).getMovieGoer() == movieGoer) {
+            if (bookingHistory.get(i).getMovieGoer().equals(movieGoer)) {
                 bookingHistory.get(i).printBooking();
             }
         }
     }
 
+    /**
+     * It takes the bookingHistory object and writes it to a file
+     */
     public static void saveData() {
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
@@ -95,6 +121,12 @@ public class BookingController implements Serializable {
         }
     }
 
+    /**
+     * It reads the file (bookingHistory) at the filepath, and returns the object
+     * that was saved there
+     * 
+     * @return The object that was read from the file.
+     */
     public static Object loadData() {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
@@ -105,7 +137,6 @@ public class BookingController implements Serializable {
             return obj;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Got an error while loading booking data: " + e);
-            // e.printStackTrace();
             return null;
         }
     }

@@ -15,7 +15,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-// Still needs Serializable method
+/**
+ * It's a controller class that manages the creation of cinemas and their
+ * layouts, also saving and loading of the cineplexes
+ */
 public class CinemaController implements Serializable {
 
     // mapping of cineplexes and their cinemas
@@ -43,6 +46,15 @@ public class CinemaController implements Serializable {
         return controllerInstance;
     }
 
+    /**
+     * It creates a new cinema object and adds it to the cineplexMap
+     * 
+     * @param cineplex The name of the cineplex
+     * @param id       Cinema ID
+     * @param val      Cinema.classType
+     * @param rows     number of rows in the cinema
+     * @param cols     number of columns in the cinema
+     */
     public void createCinema(String cineplex, int id, Cinema.classType val, int rows, int cols) {
         Cinema cinema = new Cinema(cineplex, id, val, rows, cols);
         ArrayList<Cinema> existing = cineplexMap.containsKey(cineplex) ? cineplexMap.get(cineplex)
@@ -52,6 +64,11 @@ public class CinemaController implements Serializable {
         saveData();
     }
 
+    /**
+     * For each key in the cineplexMap, print the key, then print the cinemaID of
+     * each cinema in the
+     * cinemaList
+     */
     public void listCinema() {
         for (String key : cineplexMap.keySet()) {
             System.out.println(key);
@@ -62,6 +79,14 @@ public class CinemaController implements Serializable {
         }
     }
 
+    /**
+     * It takes in a cinema ID and a cineplex name, and returns the corresponding
+     * cinema object
+     * 
+     * @param id       the cinema id
+     * @param cineplex String
+     * @return The cinema object with the given id and cineplex.
+     */
     public Cinema getCinemaByIdAndCineplex(int id, String cineplex) {
         ArrayList<Cinema> cinemas = cineplexMap.get(cineplex);
         for (Cinema c : cinemas) {
@@ -84,6 +109,12 @@ public class CinemaController implements Serializable {
         // return null;
     }
 
+    /**
+     * It checks if a cinema ID exists in a cineplex
+     * 
+     * @param id       the cinema id
+     * @param cineplex String
+     */
     public boolean checkCinemaIdExistsInCineplex(int id, String cineplex) {
         ArrayList<Cinema> cinemas = cineplexMap.get(cineplex);
         for (Cinema c : cinemas) {
@@ -104,6 +135,12 @@ public class CinemaController implements Serializable {
         // }
     }
 
+    /**
+     * It allows the user to define the layout of the cinema
+     * using a UI
+     * 
+     * @param cinema the cinema object
+     */
     public void defineLayout(Cinema cinema) {
         Scanner sc = new Scanner(System.in);
 
@@ -144,7 +181,8 @@ public class CinemaController implements Serializable {
                     System.out.println("Layout is currently: ");
                     printCinema(cinema);
                 }
-            } else if (userChoice == 2) { // Define custom layout
+            } else if (userChoice == 2) {
+                // Define custom layout
                 // Assume a complete, rectangular grid of regular seats.
                 // First line of user input defines all the non-seats.
                 // Second line defines couple seats, third line defines elite seats, fourth line
@@ -179,6 +217,21 @@ public class CinemaController implements Serializable {
         saveData();
     }
 
+    /**
+     * It takes in a cinema object, a seatType enum, and a boolean flag. If the
+     * boolean flag is true,
+     * it will use a hardcoded array of seat positions to define the layout of the
+     * cinema. If the
+     * boolean flag is false, it will prompt the user to input a string of seat
+     * positions, and then use
+     * that string to define the layout of the cinema
+     * 
+     * @param cinema            the cinema object
+     * @param sType             seatType enum
+     * @param defaultLayoutFlag boolean that determines whether the admin wants to
+     *                          use the default
+     *                          layout or not
+     */
     public void defineLayoutHelperDefineSeatType(Cinema cinema, seatType sType, boolean defaultLayoutFlag) {
         Scanner sc = new Scanner(System.in);
         String[] seatPositionsArray = null;
@@ -253,6 +306,15 @@ public class CinemaController implements Serializable {
         }
     }
 
+    /**
+     * If the seat is not found in the seating plan, it means it has already been
+     * deleted to make way
+     * for a 2-seater to the left
+     * 
+     * @param cinema  the cinema object
+     * @param seatPos The position of the seat to be added.
+     * @return The method returns a boolean value.
+     */
     public boolean validateDefineLayoutNoClash(Cinema cinema, String seatPos) {
         // Check for 3 things:
         // 1. 2-seaters are not placed outside cinema's dimensions
@@ -323,10 +385,16 @@ public class CinemaController implements Serializable {
         }
     }
 
+    /**
+     * It takes a user input string and validates that it has the expected
+     * formatting (e.g. "A1 A16 b1 b16")
+     * (Logic for validating no clashes is in validateDefineLayoutNoClash())
+     * 
+     * @param cinema the cinema object
+     * @param userin "A1 A16 B1 B16"
+     * @return The method is returning a boolean value.
+     */
     public boolean validateDefineLayoutUserInput(Cinema cinema, String userin) {
-        // Validate that user input has expected formatting (seats sep. by spaces, e.g.
-        // "A1 A16 b1 b16")
-        // (Logic for validating no clashes is in validateDefineLayoutNoClash())
 
         String[] seatPositionsArray = userin.trim().replaceAll("\\s{2,}", " ").split(" "); // Splits by space,
                                                                                            // regardless of number of
@@ -350,13 +418,24 @@ public class CinemaController implements Serializable {
         return true;
     }
 
+    /**
+     * It returns the index of the seat in the seats ArrayList that starts from the
+     * specified row and
+     * col
+     *
+     * Returns -1 if no seat begins from that specified row and col
+     * If there's a 2-seater from A1-A2, findSeatIndexByStartRowAndCol() returns -1
+     * when
+     * row and col corresponding to "A2" is passed, since even though there's
+     * technically a seat there,
+     * its starting position is not A2 but instead at A1.
+     * 
+     * @param cinema The cinema object that contains the seating plan
+     * @param row    The row of the seat
+     * @param col    The column of the seat
+     * @return The index of the seat in the ArrayList.
+     */
     public int findSeatIndexByStartRowAndCol(Cinema cinema, int row, int col) {
-        // Returns -1 if no seat begins from that specified row and col
-        // If there's a 2-seater from A1-A2, findSeatIndexByStartRowAndCol() returns -1
-        // when
-        // row and col corresponding to "A2" is passed, since even though there's
-        // technically a seat there,
-        // its starting position is not A2 but instead at A1.
 
         for (int i = 0; i < cinema.getSeatingPlan().size(); i++) { // Find seat that matches in the seats ArrayList
             if (cinema.getSeatingPlan().get(i).getRow() == row && cinema.getSeatingPlan().get(i).getCol() == col) { // If
@@ -369,6 +448,11 @@ public class CinemaController implements Serializable {
         return -1;
     }
 
+    /**
+     * It prints the cinema seating plan in a way that is easy to understand
+     * 
+     * @param cinema the cinema object
+     */
     public void printCinema(Cinema cinema) {
         String screen = "----------SCREEN----------";
         // Print screen in the center of the 0th row
@@ -378,7 +462,9 @@ public class CinemaController implements Serializable {
         System.out.println(screen);
 
         char rowLetter = 'A';
-        int col = 0; // for a cinema with 16 cols, print row letter when col is 0 or (numOfCols + 1)
+        int col = 0;
+
+        // for a cinema with 16 cols, print row letter when col is 0 or (numOfCols + 1)
         // the aisle spaces won't be a separate column in the code logic, but will be
         // printed at the midpoint
 
@@ -440,6 +526,9 @@ public class CinemaController implements Serializable {
         System.out.print(" " + rowLetter + "\n\n");
     }
 
+    /**
+     * It saves the cineplexMap object to a file
+     */
     public static void saveData() {
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
@@ -454,6 +543,11 @@ public class CinemaController implements Serializable {
         }
     }
 
+    /**
+     * It reads the data from the filepath and returns the data as an object
+     * 
+     * @return The cineplexMap object that is being read from the file.
+     */
     public static Object loadData() {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);

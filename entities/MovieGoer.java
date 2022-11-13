@@ -2,13 +2,17 @@ package entities;
 
 import java.io.Serializable;
 
+/**
+ * The MovieGoer class contains the attributes of a moviegoer,
+ * representing something like an account.
+ */
 public class MovieGoer implements Serializable {
     private String movieGoerName;
     private String emailAddress;
     private String movieGoerNumber;
     private int movieGoerAge;
 
-    public MovieGoer(String name, String email, String number, int age){
+    public MovieGoer(String name, String email, String number, int age) {
         this.movieGoerName = name;
         this.emailAddress = email;
         this.movieGoerNumber = number;
@@ -18,15 +22,15 @@ public class MovieGoer implements Serializable {
     // methods
 
     // getters
-    public String getMovieGoerName(){
+    public String getMovieGoerName() {
         return this.movieGoerName;
     }
 
-    public String getEmailAddress(){
+    public String getEmailAddress() {
         return this.emailAddress;
     }
 
-    public String getMovieGoerNumber(){
+    public String getMovieGoerNumber() {
         return this.movieGoerNumber;
     }
 
@@ -51,4 +55,3 @@ public class MovieGoer implements Serializable {
         this.movieGoerAge = age;
     }
 }
-

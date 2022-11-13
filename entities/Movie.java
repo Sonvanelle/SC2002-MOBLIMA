@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.lang.Comparable;
 import java.io.Serializable;
 
+/**
+ * Movie is a class that stores information about a movie, including its name,
+ * length, status,
+ * synopsis, director, cast, total rating, review count, and ticket sales
+ */
 public class Movie implements Comparable<Movie>, Serializable {
-    // TODO movie type (blockbuster/3D) should be in this class?
+
     private String movieName;
     private long movieMin;
     private showingStatus status; // COMING_SOON, PREVIEW, NOW_SHOWING, END_OF_SHOWING
@@ -41,13 +46,21 @@ public class Movie implements Comparable<Movie>, Serializable {
 
     // methods
 
+    /**
+     * Calculates the average rating of the movie
+     * 
+     * @return The average rating of the movie.
+     */
     public float averageRating() {
-        if (reviewCount == 0) {
+        if (reviewCount == 0 || reviewCount == 1) {
             return 0;
         }
         return totalRating / reviewCount;
     }
 
+    /**
+     * Prints out the details of the movie in a pretty manner.
+     */
     public void printDetails() {
         System.out.println("------------\n");
         System.out.printf("Title: %s\n", getMovieName());

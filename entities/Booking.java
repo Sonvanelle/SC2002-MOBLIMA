@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import controllers.SettingsController;
 
+/**
+ * Class that stores the booking details of a moviegoer, for a movie showing.
+ */
 public class Booking implements Serializable {
 	private String TID;
 	private MovieGoer movieGoer;
@@ -26,6 +29,9 @@ public class Booking implements Serializable {
 	}
 
 	// methods
+	/**
+	 * It prints out the booking details in a pretty manner
+	 */
 	public void printBooking() {
 		System.out.printf("Booking Transaction ID: %s\n", TID);
 		System.out.printf("Booking timestamp: %s\n",
@@ -34,10 +40,12 @@ public class Booking implements Serializable {
 		System.out.printf("Cinema: %d\n", cinemaID);
 		System.out.print("Showing: " + showing.getMovie().getMovieName() + " at " + showing.getShowtime() + "\n");
 
-		char seatPosRowChar = (char) (seat.getRow() + 65);
-		System.out.printf("Seat: %c%d\n", seatPosRowChar, seat.getCol() + 1);
+		int tempRowNum = seat.getRow() + 65;
+		String seatPosRowString = Character.toString((char) tempRowNum);
+		int seatPosRowCol = seat.getCol() + 1;
+		System.out.printf("Seat: %s%d\n", seatPosRowString, seatPosRowCol);
 		System.out.print(
-				"Amount paid: " + SettingsController.getController().getPrice(this.seat.getSeatType(), this.showing,
+				"Amount paid: $" + SettingsController.getController().getPrice(this.seat.getSeatType(), this.showing,
 						this.movieGoer) + "\n\n");
 	}
 

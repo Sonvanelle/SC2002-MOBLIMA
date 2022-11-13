@@ -47,18 +47,32 @@ public class ShowingController implements Serializable {
         return controllerInstance;
     }
 
+    /**
+     * It returns an ArrayList of Showing objects that are in the same cineplex and
+     * cinema as the
+     * cinema object passed in
+     * 
+     * @param cinema Cinema object
+     * @return An ArrayList of Showing objects.
+     */
     public ArrayList<Showing> getShowingListByCinema(Cinema cinema) {
         ArrayList<Showing> temp = new ArrayList<Showing>();
         for (Showing s : showingList) {
 
             if (s.getShowingCinema().getCineplex().equals(cinema.getCineplex())
-                    && s.getShowingCinema().getCinemaID() == (cinema.getCinemaID())) { // matches cinema // ???
+                    && s.getShowingCinema().getCinemaID() == (cinema.getCinemaID())) { // matches cinema
                 temp.add(s); // add to temp list
             }
         }
         return temp;
     }
 
+    /**
+     * It prints the cinema seating plan of the specified showing
+     * in a way that is easy to read
+     * 
+     * @param showing a Showing object
+     */
     public void printCinema(Showing showing) {
         String screen = "----------SCREEN----------";
         // Print screen in the center of the 0th row
@@ -131,6 +145,16 @@ public class ShowingController implements Serializable {
         System.out.print(" " + rowLetter + "\n\n");
     }
 
+    /**
+     * It takes in a showing object, prints the seating plan of the showing, prompts
+     * the user to enter
+     * a seat position, validates the seat position, sets the occupancy of the seat
+     * to true and returns
+     * the seat object
+     * 
+     * @param showing Showing object
+     * @return The seat object that was just set to occupied.
+     */
     public Seat setSeatingForShowing(Showing showing) {
 
         Scanner sc = new Scanner(System.in);
@@ -151,7 +175,8 @@ public class ShowingController implements Serializable {
             System.out.println("Enter seat position");
             seatPos = sc.nextLine();
         }
-        int seatPosRow = (int) seatPos.charAt(0) - 65;
+        int seatPosRow = ((int) seatPos.charAt(0)) - 65;
+        System.out.println("for debugging: current seatPos char: " + seatPos.charAt(0) + ", seatPosRow: " + seatPosRow);
         int seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1;
 
         // Set occupancy of specific seat element in seating (ArrayList<Seat>) in the
@@ -163,13 +188,16 @@ public class ShowingController implements Serializable {
         return showing.getSeating().get(seatIndex);
     }
 
+    /**
+     * Validate that the seat selected is not EMPTY (invalid) and not occupied
+     * Format of seatPos is <Letter><Number>
+     * Row and col cannot exceed cinema's dimensions (seat exists in the cinema)
+     * 
+     * @param showing the showing object
+     * @param seatPos "A1"
+     * @return A boolean value.
+     */
     public boolean validateSeatSelection(Showing showing, String seatPos) {
-        // Validate that:
-        // 1. Format of seatPos is <Letter><Number>
-        // 2. Row and col don't exceed cinema's dimensions (seat exists in the cinema
-        // layout)
-        // 3. Seat selected is not EMPTY (invalid)
-        // 4. Seat selected is not occupied
 
         Cinema cinema = showing.getShowingCinema();
         char seatPosRowChar = seatPos.charAt(0);
@@ -209,30 +237,46 @@ public class ShowingController implements Serializable {
         return true;
     }
 
+    /**
+     * It finds the index of a seat in the seating plan of a cinema, given the row
+     * and column of the seat.
+     * Returns -1 if no seat exists at that specified row and col.
+     * If there's a 2-seater from A1-A2, this method returns same index for both A1
+     * and A2.
+     * The row and col arguments would already have been validated when this method
+     * runs, such that seat will always be found. -1 should never be returned.
+     * 
+     * @param showing The showing object that the seat is in.
+     * @param row     The row of the seat to be found
+     * @param col     The column of the seat to be found.
+     * @return The index of the seat in the seating plan.
+     */
     public int findSeatIndexByRowAndCol(Showing showing, int row, int col) {
-        // Returns -1 if no seat exists at that specified row and col.
-        // If there's a 2-seater from A1-A2, this method returns same index for both A1
-        // and A2.
-        // The row and col arguments would already have been validated when this method
-        // runs, such that seat will always be found. -1 should never be returned.
-        Cinema cinema = showing.getShowingCinema();
-
-        for (int i = 0; i < cinema.getSeatingPlan().size(); i++) { // Find seat that matches in the seats ArrayList
-            if (cinema.getSeatingPlan().get(i).getRow() == row && cinema.getSeatingPlan().get(i).getCol() == col) { // If
-                                                                                                                    // single
-                                                                                                                    // seat,
-                                                                                                                    // or
-                                                                                                                    // left
-                                                                                                                    // half
-                                                                                                                    // of
-                                                                                                                    // 2-seater
-                                                                                                                    // found
+        for (int i = 0; i < showing.getSeating().size(); i++) { // Find seat that matches in the seats ArrayList
+            Seat currentSeat = showing.getSeating().get(i);
+            if (currentSeat.getRow() == row && currentSeat.getCol() == col) { // If
+                                                                              // single
+                                                                              // seat,
+                                                                              // or
+                                                                              // left
+                                                                              // half
+                                                                              // of
+                                                                              // 2-seater
+                                                                              // found
                 return i;
-            } else if (cinema.getSeatingPlan().get(i).getRow() > row || cinema.getSeatingPlan().get(i).getCol() > col) {
+            }
+
+            else if (currentSeat.getRow() == row && currentSeat.getCol() == col - 1) {
                 // If seat-to-be-found has been "skipped" over, that means the seat-to-be-found
                 // is the prev seat,
                 // which is a 2-seater with the col argument being the right half of the seat.
-                seatType prevSeatType = cinema.getSeatingPlan().get(i - 1).getSeatType();
+                seatType prevSeatType = showing.getSeating().get(i).getSeatType();
+                if (prevSeatType == seatType.COUPLE || prevSeatType == seatType.ELITE
+                        || prevSeatType == seatType.ULTIMA) {
+                    return i;
+                }
+            } else if (currentSeat.getRow() > row && currentSeat.getCol() == 0) {
+                seatType prevSeatType = showing.getSeating().get(i - 1).getSeatType();
                 if (prevSeatType == seatType.COUPLE || prevSeatType == seatType.ELITE
                         || prevSeatType == seatType.ULTIMA) {
                     return i - 1;
@@ -242,6 +286,14 @@ public class ShowingController implements Serializable {
         return -1;
     }
 
+    /**
+     * It checks that the showing to be added does not overlap with any other
+     * showings in the cinema
+     * 
+     * @param cinema  Cinema object
+     * @param showing the showing to be added
+     * @return The method is returning a boolean value.
+     */
     public boolean verifyNoShowingOverlaps(Cinema cinema, Showing showing) {
         // if the selected movie has no showings, return false
         if (getShowingListByCinema(cinema).size() == 0) {
@@ -298,36 +350,13 @@ public class ShowingController implements Serializable {
         return false;
     }
 
-    // public void addShowing(Cinema cinema, LocalDateTime showTime, Movie movie){
-    // Showing showing = new Showing(cinema, showTime, movie);
-    // showingList.add(showing);
-    // }
-
-    // public void editShowing(String moviename){
-    // Scanner sc = new Scanner(System.in);
-    // ArrayList<Showing> showingsToEdit = new ArrayList<Showing>();
-    // int index = 0;
-    // for (int i=0; i<showingList.size(); i++){
-    // if (showingList.get(i).getMovie().getMovieName() == moviename){
-    // Showing temp = showingList.get(i);
-    // showingsToEdit.add(temp);
-    // System.out.println("Showing "+(index+1)+")\n"+
-    // "Showtime: " + temp.getShowtime() + "\n"+
-    // "Cineplex/Cinema" + temp.getShowingCinema()
-    // );
-    // index++;
-    // }
-    // }
-    // if (showingsToEdit.size()==0) {System.out.println("No showings found.
-    // Returning... \n"); return;}
-
-    // //TO DO: pick a showing in showingsToEdit, by (index-1), and allow to change
-    // its datetime.
-    // // I've written an editShowing method in CinemaController alr, but I'm not
-    // too sure whether
-    // // the parameters basically remain the same or what
-    // }
-
+    /**
+     * It adds a new showing to the cinema's showing list and returns true if it is
+     * successful.
+     * 
+     * @param cinema Cinema object
+     * @return The method returns a boolean value
+     */
     public boolean addShowing(Cinema cinema) {
 
         // Get movie and showtime from admin
@@ -381,6 +410,14 @@ public class ShowingController implements Serializable {
     }
 
     // Returns true if show successfully added without clashes
+    /**
+     * It adds a new showing to the list of showings for a particular cinema, and
+     * returns true if the
+     * new showing is added successfully
+     * 
+     * @param cinema     the cinema that the showing is to be added to
+     * @param newShowing the new showing to be added
+     */
     public boolean addShowingHelper(Cinema cinema, Showing newShowing) { // helper method so can be used in
                                                                          // editShowing()
         ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema);
@@ -407,6 +444,11 @@ public class ShowingController implements Serializable {
         return false;
     }
 
+    /**
+     * It allows the user to edit a showing by changing the movie or the show time
+     * 
+     * @param cinema Cinema
+     */
     public void editShowing(Cinema cinema) {
         ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema); // TODO size 0 after exiting adminview
                                                                                   // and reentering (fixed)
@@ -420,9 +462,15 @@ public class ShowingController implements Serializable {
         System.out.println("\n-------\nList of showings:");
         for (int i = 0; i < showingListForCinema.size(); i++) {
             Movie currentMovie = showingListForCinema.get(i).getMovie();
-            System.out.printf("Movie %d: %-30s | %tT - %tT\n", i + 1,
-                    showingListForCinema.get(i).getMovie().getMovieName(), showingListForCinema.get(i).getShowtime(),
-                    showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+            if (currentMovie.getStatus() != showingStatus.END_OF_SHOWING) {
+
+                System.out.printf("%d. %-30s | %td-%tm-%tY %tT - %tT\n", i + 1,
+                        showingListForCinema.get(i).getMovie().getMovieName(), showingList.get(i).getShowtime(),
+                        showingList.get(i).getShowtime(), showingList.get(i).getShowtime(),
+                        showingListForCinema.get(i).getShowtime(),
+                        showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+            }
+
         }
         System.out.println("-------");
 
@@ -461,10 +509,7 @@ public class ShowingController implements Serializable {
                 }
                 movieChoice -= 1;
                 // Change movie
-                showingListForCinema.get(index).setMovie(movieList.get(movieChoice)); // Pretty sure
-                                                                                      // showingListForCinema will work
-                                                                                      // and that don't need to change
-                                                                                      // to showingList
+                showingListForCinema.get(index).setMovie(movieList.get(movieChoice));
 
             } else if (userChoice == 2) { // Edit showing's show time
                 System.out.println("\nEnter new show time in the format DD-MM-YYYY hh:mm");
@@ -500,6 +545,12 @@ public class ShowingController implements Serializable {
         saveData();
     }
 
+    /**
+     * It prints out a list of showings, then asks the user to select one of the
+     * showings to delete
+     * 
+     * @param cinema Cinema object
+     */
     public void deleteShowing(Cinema cinema) {
         ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema);
         Scanner sc = new Scanner(System.in);
@@ -508,9 +559,14 @@ public class ShowingController implements Serializable {
         System.out.println("\n-------\nList of showings:");
         for (int i = 0; i < showingListForCinema.size(); i++) {
             Movie currentMovie = showingListForCinema.get(i).getMovie();
-            System.out.printf("Movie %d: %-30s | %tT - %tT\n", i + 1,
-                    showingListForCinema.get(i).getMovie().getMovieName(), showingListForCinema.get(i).getShowtime(),
-                    showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+            if (currentMovie.getStatus() != showingStatus.END_OF_SHOWING) {
+
+                System.out.printf("%d. %-30s | %td-%tm-%tY %tT - %tT\n", i + 1,
+                        showingListForCinema.get(i).getMovie().getMovieName(), showingList.get(i).getShowtime(),
+                        showingList.get(i).getShowtime(), showingList.get(i).getShowtime(),
+                        showingListForCinema.get(i).getShowtime(),
+                        showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+            }
         }
         System.out.println("-------");
 
@@ -527,7 +583,12 @@ public class ShowingController implements Serializable {
         saveData();
     }
 
-    // returns list of showings by movie
+    /**
+     * Returns list of showings by movie
+     * 
+     * @param movie Movie
+     * @return The method is returning an ArrayList of Showings.
+     */
     public ArrayList<Showing> listShowings(Movie movie) {
         ArrayList<Showing> showingSelectionList = new ArrayList<Showing>();
 
@@ -539,6 +600,12 @@ public class ShowingController implements Serializable {
         return showingSelectionList;
     }
 
+    /**
+     * Get all the showings in a cineplex, based on the cineplex string
+     * 
+     * @param cineplex String
+     * @return An ArrayList of Showing objects.
+     */
     public ArrayList<Showing> listShowingsByCineplex(String cineplex) {
         ArrayList<Showing> result = new ArrayList<Showing>();
         CinemaController cinemaController = CinemaController.getController();
@@ -554,15 +621,20 @@ public class ShowingController implements Serializable {
                 if ((s.getShowingCinema().getCinemaID() == c.getCinemaID())
                         && (s.getShowingCinema().getCineplex().equals(c.getCineplex()))) {
                     result.add(s);
-                    System.out.println("Added\n");
                 }
             }
-            System.out.println("-----");
         }
-
+        System.out.println("-----");
         return result;
     }
 
+    /**
+     * This function updates the movie of a showing if the movie name of the showing
+     * is the same as the
+     * movie name to be updated
+     * 
+     * @param updatedMovie The movie that has been updated
+     */
     public static void updateMovieOfShowing(Movie updatedMovie) {
         for (Showing s : showingList) {
             if (s.getMovie().getMovieName().equals(updatedMovie.getMovieName())) {
@@ -571,21 +643,23 @@ public class ShowingController implements Serializable {
         }
     }
 
+    /**
+     * It prints out the movie name, showtime and cinema id of each showing in the
+     * showingList
+     */
     public void displayShowings() {
         CinemaController cc = CinemaController.getController();
-        // cc.
 
         for (Showing s : showingList) {
 
             System.out.println(s.getMovie().getMovieName() + " " + s.getShowtime() + " Cinema id is " +
                     s.getShowingCinema().getCinemaID());
-            // if (c.equals(s.getShowingCinema())){
-            // result.add(s);
-            // System.out.println("Added\n");
-            // }
         }
     }
 
+    /**
+     * Saves the showingList object to a file
+     */
     public static void saveData() {
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
@@ -599,6 +673,11 @@ public class ShowingController implements Serializable {
         }
     }
 
+    /**
+     * It loads the showingList data from the filepath and returns it
+     * 
+     * @return The showingList object that was saved.
+     */
     public static Object loadData() {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
@@ -613,5 +692,4 @@ public class ShowingController implements Serializable {
             return null;
         }
     }
-
 }

@@ -20,6 +20,10 @@ import java.util.Scanner;
 import java.util.Collections;
 import java.util.HashMap;
 
+/**
+ * It's a controller class that handles the creation, deletion, and editing of
+ * movies
+ */
 public class MovieController implements Serializable {
     private static ArrayList<Movie> movieList;
     private static final String filepath = "movielist.ser";
@@ -42,12 +46,27 @@ public class MovieController implements Serializable {
         return controllerInstance;
     }
 
+    /**
+     * This function creates a new movie object and adds it to the movieList
+     * 
+     * @param movieName String
+     * @param movieMin  duration of the movie
+     * @param val       showingStatus is an enum
+     * @param synopsis  String
+     * @param director  String
+     * @param cast      ArrayList of String
+     */
     public void createMovie(String movieName, long movieMin, showingStatus val,
             String synopsis, String director, ArrayList<String> cast) {
         Movie movie = new Movie(movieName, movieMin, val, synopsis, director, cast);
         movieList.add(movie);
     }
 
+    /**
+     * This function deletes a movie from the movie list
+     * 
+     * @param movieName The name of the movie to be deleted
+     */
     public void deleteMovie(String movieName) {
         for (int i = 0; i < movieList.size(); i++) {
             if (movieList.get(i).getMovieName() != null && movieList.get(i).getMovieName() == movieName) {
@@ -56,6 +75,11 @@ public class MovieController implements Serializable {
         }
     }
 
+    /**
+     * It edits movie parameters via a User Interface
+     * 
+     * @param movieName String
+     */
     public void editMovie(String movieName) {
         Scanner sc = new Scanner(System.in);
         Movie movieToEdit = null;
@@ -157,14 +181,26 @@ public class MovieController implements Serializable {
         }
         movieList.set(i, movieToEdit);
         ShowingController.updateMovieOfShowing(movieToEdit);
+        System.out.println("Showings of this movie have been updated.");
         return;
     }
 
+    /**
+     * This function returns the movieList
+     * 
+     * @return The movieList arraylist is being returned.
+     */
     public ArrayList<Movie> getMovieList() {
         return movieList;
     }
 
-    // returns filtered list of movies that are PREVIEW or NOW SHOWING only
+    /**
+     * It returns an ArrayList of Movie objects that are not in the END_OF_SHOWING
+     * or COMING_SOON
+     * status
+     * 
+     * @return An ArrayList of Movie objects.
+     */
     public ArrayList<Movie> getShowingMovieList() {
 
         ArrayList<Movie> selectedMovieList = new ArrayList<Movie>();
@@ -178,22 +214,31 @@ public class MovieController implements Serializable {
         return selectedMovieList;
     }
 
-    // helper for printMovieListByStatus, takes in an array list and prints movie
-    // name and details
+    /**
+     * Helper for printMovieListByStatus, prints out the movie list with the movie
+     * name, status, and average rating
+     * 
+     * @param moviesToPrint ArrayList of Movie objects
+     */
     public void printMovieList(ArrayList<Movie> moviesToPrint) {
         System.out.println("------------\n");
         for (int i = 0; i < moviesToPrint.size(); i++) {
             System.out.println((i + 1) + ". " + moviesToPrint.get(i).getMovieName());
             System.out.println("Status: " + moviesToPrint.get(i).getStatus());
-            System.out.println("Avg Rating: " + moviesToPrint.get(i).averageRating() + "\n");
+            if (moviesToPrint.get(i).averageRating() == 0.0 || moviesToPrint.get(i).averageRating() == -0.0) {
+                System.out.println("Avg Rating: N/A\n");
+            } else {
+                System.out.println("Avg Rating: " + moviesToPrint.get(i).averageRating() + "\n");
+            }
         }
         System.out.println("------------\n");
     }
 
-    // controller method that allows users to view all movies of a certain showing
-    // status
-    // calls movieSelector on the chosen status for further action (booking, review,
-    // etc)
+    /**
+     * It prints a list of movies based on the user's input and then calls
+     * movieSelector
+     * on the chosen movie for further action (booking, review, etc)
+     */
     public void printMovieListByStatus() {
 
         int statusOption;
@@ -282,7 +327,14 @@ public class MovieController implements Serializable {
         } while (statusOption != 0);
     }
 
-    // allows the user to select a movie from the chosen list
+    /**
+     * Controller method that allows the user to select a movie from a list of
+     * movies
+     * Calls a menu (movieActionList) for a user to view and leave reviews, make
+     * bookings
+     * 
+     * @param movieSelectionList ArrayList of Movie objects
+     */
     public void movieSelector(ArrayList<Movie> movieSelectionList) {
         int option = 0;
         Scanner sc = new Scanner(System.in);
@@ -322,10 +374,16 @@ public class MovieController implements Serializable {
             // to be booked
             movieActionList(movieSelectionList.get(option), MovieGoerController.getController().getCurrentMovieGoer());
         }
-
     }
 
-    // menu for a (valid, logged-in) user to view and leave reviews, make bookings
+    /**
+     * Controller method that allows a user to view reviews, create reviews, and
+     * make
+     * bookings for a selected movie.
+     * 
+     * @param selectedMovie Movie object
+     * @param movieGoer     MovieGoer object
+     */
     public void movieActionList(Movie selectedMovie, MovieGoer movieGoer) {
         int option;
         Scanner sc = new Scanner(System.in);
@@ -361,8 +419,12 @@ public class MovieController implements Serializable {
                     System.out.print("Enter your rating from 0-5: ");
 
                     // users can leave ratings in integers from 0-5
-                    while (!sc.hasNextInt() && !(sc.nextInt() >= '0' && sc.nextInt() <= '5')) {
-                        System.out.println("Please input a number value between 0 to 5. ");
+                    while (!sc.hasNextInt()) {
+                        System.out.println("Please input an integer value. \n");
+                        sc.next();
+                    }
+                    while (!(sc.nextInt() >= '0' && sc.nextInt() <= '5')) {
+                        System.out.println("Please input an integ value between 0 to 5. \n");
                         sc.next();
                     }
 
@@ -393,7 +455,7 @@ public class MovieController implements Serializable {
                     for (String key : CinemaController.cineplexMap.keySet()) {
                         System.out.println(key);
                     }
-                    System.out.println("-------");
+                    System.out.println("-------\n");
 
                     // Checks if user input is a valid cineplex
                     while (!isCineplex) {
@@ -409,21 +471,42 @@ public class MovieController implements Serializable {
                         // isCineplex = CinemaController.cineplexMap.containsKey(cineplex);
                     }
 
-                    ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);
+                    ArrayList<Showing> initialShowingList = ShowingController.getController()
+                            .listShowingsByCineplex(cineplex);
+
+                    ArrayList<Showing> showingList = new ArrayList<Showing>();
+
+                    for (Showing s : initialShowingList) {
+                        if (s.getMovie().getMovieName().equals(selectedMovie.getMovieName())) {
+                            showingList.add(s);
+                        }
+                    }
 
                     System.out.println("List of Showings at " + cineplex);
                     for (int i = 0; i < showingList.size(); i++) {
-                        System.out.println((i + 1) + ":" + showingList.get(i).getShowtime());
-                    }
-                    if (showingList.size() == 0)
-                        System.out.println("No showings found.");
+                        Movie currentMovie = showingList.get(i).getMovie();
+                        System.out.printf("%d. %-30s | %td-%tm-%tY %tT - %tT\n", i + 1,
+                                showingList.get(i).getMovie().getMovieName(), showingList.get(i).getShowtime(),
+                                showingList.get(i).getShowtime(), showingList.get(i).getShowtime(),
+                                showingList.get(i).getShowtime(),
 
+                                showingList.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
+                    }
+                    System.out.println("-------");
+                    if (showingList.size() == 0) {
+                        System.out.println("No showings found.");
+                        break;
+                    }
                     while (choice > showingList.size() || choice < 0) {
                         System.out.println("Choose a showing: ");
                         choice = sc.nextInt();
                     }
 
                     Showing chosenShowing = showingList.get(choice - 1);
+
+                    for (Seat s : chosenShowing.getShowingCinema().getSeatingPlan()) {
+                        System.out.println("Row: " + s.getRow() + " Col: " + s.getCol());
+                    }
 
                     // User chooses seat - seats will be set as occupied for the chosen showing
                     Seat chosenSeat = showingController.setSeatingForShowing(chosenShowing);
@@ -433,6 +516,7 @@ public class MovieController implements Serializable {
                             chosenShowing.getShowingCinema().getCinemaID(), cineplex);
 
                     break;
+
                 case 0:// wont print invalid option on first 0.
                     break;
                 default:
@@ -442,6 +526,11 @@ public class MovieController implements Serializable {
         } while (option != 0);
     }
 
+    /**
+     * It takes in a list of movies, and prints out the top 5 movies in the list,
+     * sorted by either
+     * ticket sales or average rating
+     */
     public void viewTop5() {
         int option;
         Scanner sc = new Scanner(System.in);
@@ -483,7 +572,7 @@ public class MovieController implements Serializable {
                     top5List.sort(Comparator.comparingDouble(Movie::getTicketSales).reversed());
                     if (top5List.size() != 0) {
                         for (int i = 0; i < Math.min(top5List.size(), 5); i++) {
-                            System.out.printf("%d. %s \n Sales: %.2f\n", (i + 1), top5List.get(i).getMovieName(),
+                            System.out.printf("%d. %s \n Sales: $%.2f\n", (i + 1), top5List.get(i).getMovieName(),
                                     top5List.get(i).getTicketSales());
                         }
 
@@ -529,7 +618,14 @@ public class MovieController implements Serializable {
         } while (option != 0);
     }
 
-    // searches for the movie name and adds the rating value from the review
+    /**
+     * This function takes in a movie name and a rating, and adds the rating to the
+     * movie's list of
+     * ratings
+     * 
+     * @param movieName The name of the movie to add a rating to.
+     * @param rating    float
+     */
     public void addRating(String movieName, float rating) {
         for (int i = 0; i < movieList.size(); i++) {
             if (movieList.get(i).getMovieName().equals(movieName)) {
@@ -542,6 +638,14 @@ public class MovieController implements Serializable {
         System.out.println("No movie to add a rating to was found.");
     }
 
+    /**
+     * This function takes in a movie name and a price, and then adds the price to
+     * the movie's total
+     * sales
+     * 
+     * @param movieName The name of the movie to add a sale to.
+     * @param price     double
+     */
     public void addSale(String movieName, double price) {
         for (int i = 0; i < movieList.size(); i++) {
             if (movieList.get(i).getMovieName().equals(movieName)) {
@@ -553,6 +657,9 @@ public class MovieController implements Serializable {
         System.out.println("No movie to add a sale to was found.");
     }
 
+    /**
+     * It takes the movieList object and writes it to a file
+     */
     public static void saveData() {
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
@@ -566,6 +673,12 @@ public class MovieController implements Serializable {
         }
     }
 
+    /**
+     * It reads the movieList object at the filepath, and returns the object that
+     * was saved there
+     * 
+     * @return The movieList object that was read from the file.
+     */
     public static Object loadData() {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);

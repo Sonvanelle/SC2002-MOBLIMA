@@ -1,16 +1,22 @@
 package entities;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * The Showing class contains a showing movie, a showing time, a cinema, and a
+ * seating plan.
+ * Bookings are made for Showings of Movies.
+ */
 public class Showing implements Serializable {
     private Movie showingMovie;
     private LocalDateTime showingTime;
     private ArrayList<Seat> seating;
     private Cinema showingCinema;
 
-    // Constructor 
-    public Showing(Cinema showingCinema, LocalDateTime showTime, Movie movie){
+    // Constructor
+    public Showing(Cinema showingCinema, LocalDateTime showTime, Movie movie) {
         this.showingMovie = movie;
         this.showingTime = showTime;
         this.showingCinema = showingCinema;
@@ -18,7 +24,7 @@ public class Showing implements Serializable {
     }
 
     // Accessors
-    public Movie getMovie(){
+    public Movie getMovie() {
         return this.showingMovie;
     }
 
@@ -26,25 +32,20 @@ public class Showing implements Serializable {
         return this.showingCinema;
     }
 
-    public LocalDateTime getShowtime(){
+    public LocalDateTime getShowtime() {
         return showingTime;
     }
 
-    public ArrayList<Seat> getSeating(){
+    public ArrayList<Seat> getSeating() {
         return this.seating;
     }
 
-    //Mutators
-    public void setMovie(Movie movie){
+    // Mutators
+    public void setMovie(Movie movie) {
         this.showingMovie = movie;
-    }    
-
-    public void setShowingTime( LocalDateTime showTime){
-        this.showingTime = showTime;
     }
 
-    /* public void setSeating(Seat seat){  
-        int index = this.seating.indexOf(seat);
-        this.seating.get(index).setOccupancy(true);
-    } */
+    public void setShowingTime(LocalDateTime showTime) {
+        this.showingTime = showTime;
+    }
 }

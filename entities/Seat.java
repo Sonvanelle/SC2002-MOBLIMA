@@ -2,6 +2,10 @@ package entities;
 
 import java.io.Serializable;
 
+/**
+ * A seat is a space in the Cinema that can be occupied by a moviegoer.
+ * It will hold row and column data, occupancy status, and seat type.
+ */
 public class Seat implements Serializable {
 
   public enum seatType {
@@ -16,7 +20,7 @@ public class Seat implements Serializable {
 
   // row and column are identifiers for a space, the seat ID is the identifier
   // a seat -- couple seats take up 2 spaces but share the same seat id
-  public Seat(int row, int col, seatType sType, String seatId, boolean occupied){
+  public Seat(int row, int col, seatType sType, String seatId, boolean occupied) {
     this.row = row;
     this.col = col;
     this.seatId = seatId;
@@ -26,15 +30,15 @@ public class Seat implements Serializable {
 
   // getters
 
-  public int getRow(){
+  public int getRow() {
     return this.row;
   }
 
-  public int getCol(){
+  public int getCol() {
     return this.col;
   }
 
-  public boolean getOccupancy(){
+  public boolean getOccupancy() {
     return this.occupied;
   }
 
@@ -48,7 +52,7 @@ public class Seat implements Serializable {
 
   // setters
 
-  public void setOccupancy(boolean occupancy){
+  public void setOccupancy(boolean occupancy) {
     this.occupied = occupancy;
   }
 

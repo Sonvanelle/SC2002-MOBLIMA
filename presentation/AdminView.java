@@ -12,6 +12,10 @@ import java.util.ArrayList;
 
 public class AdminView {
 
+    /**
+     * It prints a menu, and depending on the user's choice, it calls
+     * methods from the appropriate controller class.
+     */
     public void printMenu() {
         Scanner input = new Scanner(System.in);
         MovieController moviecontroller = MovieController.getController();
@@ -49,7 +53,8 @@ public class AdminView {
                             "3. Configure ticket prices \n" +
                             "4. Add cinema \n" +
                             "5. Define cinema layout \n" +
-                            "6. Return to admin menu \n");
+                            "6. Show all configs/settings \n" +
+                            "7. Return to admin menu \n");
 
                     while (!input.hasNextInt()) {
                         System.out.println("Please input a number.");
@@ -134,6 +139,8 @@ public class AdminView {
                         cinemacontroller.defineLayout(getCinemaChoiceFromUser());
                         CinemaController.saveData();
                     } else if (configOption == 6) {
+                        SettingsController.getController().printSettings();
+                    } else if (configOption == 7) {
                         System.out.println("Returning...");
                         break;
                     } else
@@ -250,6 +257,13 @@ public class AdminView {
         }
     }
 
+    /**
+     * Prints out the cineplexes and cinemas in each cineplex, then asks the user to
+     * choose a
+     * cineplex, then asks the user to choose a cinema in that cineplex
+     * 
+     * @return Cinema object
+     */
     private Cinema getCinemaChoiceFromUser() {
         Scanner sc = new Scanner(System.in);
         CinemaController cinemacontroller = new CinemaController();
