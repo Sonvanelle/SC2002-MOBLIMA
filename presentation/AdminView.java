@@ -21,16 +21,17 @@ public class AdminView{
 
         int cont = 1;
         while(cont!=0){
-            System.out.println("Admin View \n" +
+            System.out.println("\nAdmin View \n" +
                                 "------------\n" +
                                 "1. Configure system settings \n" +
                                 "2. Create a Movie Listing \n" +
                                 "3. Update a Movie Listing \n" +
                                 "4. View top 5 movies by Sales/Ratings \n" +
-                                "5. Add showing \n" +
-                                "6. Edit showing \n" +
-                                "7. Delete showing \n" +
-                                "8. Return to main menu \n" + 
+                                "5. View showings \n" +
+                                "6. Add showing \n" +
+                                "7. Edit showing \n" +
+                                "8. Delete showing \n" +
+                                "9. Return to main menu \n" + 
                                 "------------"); 
 
             while (!input.hasNextInt()){
@@ -207,20 +208,25 @@ public class AdminView{
                     moviecontroller.viewTop5();
                     break;
                 
-                case 5: // Add showing to a cinema
+                case 5: // TODO View showings
+                    
+                    break;
+                case 6: // Add showing to a cinema
                     Cinema cinemaToBeAdded = getCinemaChoiceFromUser();
-                    showingcontroller.addShowing(cinemaToBeAdded);
+                    if (showingcontroller.addShowing(cinemaToBeAdded)) {
+                        System.out.println("Showing successfully added.");
+                    }
                     break;                    
-                case 6: // Edit showing to a cinema
+                case 7: // Edit showing to a cinema
                     Cinema cinemaToBeEdited = getCinemaChoiceFromUser();
                     showingcontroller.editShowing(cinemaToBeEdited);
                     break;
-                case 7: // Delete showing to a cinema
+                case 8: // Delete showing to a cinema
                     Cinema cinemaToBeDeleted = getCinemaChoiceFromUser();
                     showingcontroller.deleteShowing(cinemaToBeDeleted);
                     break;
 
-                case 8: //return to main menu.
+                case 9: //return to main menu.
                     System.out.println("Exiting to main menu...");
 
                     //Save all controller's data to file when exiting this module.
@@ -254,13 +260,14 @@ public class AdminView{
             }
         }
 
-        System.out.println("Which Cineplex do you want to view the movie from?");
+        System.out.println("Which Cineplex ?");// changed because it doesnt make sense in delete showing
         boolean isCineplex = false; 
+        String cineplex = null;
         //Checks if user input is a valid cineplex
         while(!isCineplex)
         {
             System.out.println("Choose a Cineplex: ");
-            String cineplex = sc.nextLine();
+            cineplex = sc.nextLine().toUpperCase();
 
             for(String key : CinemaController.cineplexMap.keySet()){
                 isCineplex = cineplex.compareTo(key) == 0 ? true : false;
@@ -268,7 +275,7 @@ public class AdminView{
             }                    
         }
 
-        System.out.println("Enter integer of cinema that you want to edit: ");
+        System.out.println("Enter id of cinema that you want to edit: ");
 
         int cinemaId = -1;
         while (true) {
@@ -279,11 +286,11 @@ public class AdminView{
             cinemaId = sc.nextInt();
             sc.nextLine();
 
-            if (!cinemacontroller.checkCinemaIdExistsInCineplex(cinemaId)) { 
+            if (!cinemacontroller.checkCinemaIdExistsInCineplex(cinemaId, cineplex)) { 
                 System.out.println("No such cinema exists.");
             }
             else {
-                return cinemacontroller.getCinemaById(cinemaId);
+                return cinemacontroller.getCinemaByIdAndCineplex(cinemaId, cineplex);
             }
         }
     }

@@ -62,12 +62,11 @@ public class CinemaController implements Serializable {
         }
     }
 
-    // ASSUMPTION: Assumes that each cinema has a unique ID, even across different cineplexes
-    public Cinema getCinemaById(int id) { 
+    public Cinema getCinemaByIdAndCineplex(int id, String cineplex) { 
         for (HashMap.Entry<String, ArrayList<Cinema>> mapElement : cineplexMap.entrySet()) {
             ArrayList<Cinema> currCinemasArrayList = mapElement.getValue();
             for (Cinema c: currCinemasArrayList) {
-                if (c.getCinemaID() == id) { // Edit this if cinemaId does not uniquely identify cinemas
+                if (c.getCinemaID() == id && cineplex.toUpperCase().equals(mapElement.getKey())) { 
                     return c;
                 }
             }
@@ -75,11 +74,11 @@ public class CinemaController implements Serializable {
         return null;
     }
 
-    public boolean checkCinemaIdExistsInCineplex(int id) {
+    public boolean checkCinemaIdExistsInCineplex(int id, String cineplex) {
         for (HashMap.Entry<String, ArrayList<Cinema>> mapElement : cineplexMap.entrySet()) {
             ArrayList<Cinema> currCinemasArrayList = mapElement.getValue();
             for (Cinema c: currCinemasArrayList) {
-                if (c.getCinemaID() == id) { // Edit this if cinemaId does not uniquely identify cinemas
+                if (c.getCinemaID() == id && cineplex.toUpperCase().equals(mapElement.getKey())) { 
                     return true;
                 }
             }
