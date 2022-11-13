@@ -18,6 +18,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+/**
+ * Controller class that handles the creation, deletion, and modification of Showings for Movies.
+ */
 public class ShowingController implements Serializable {
 
     private static ArrayList<Showing> showingList;
