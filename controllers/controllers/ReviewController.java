@@ -3,6 +3,9 @@ package controllers;
 import entities.Review;
 
 import java.util.ArrayList;
+
+import javax.swing.plaf.multi.MultiViewportUI;
+
 import java.io.Serializable;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -21,32 +24,34 @@ public class ReviewController implements Serializable{
             controllerInstance = new ReviewController();
         }
         
+        reviewList = (ArrayList<Review>)loadData();
         if (reviewList==null){
             System.out.println("No reviewList found; creating new file.");
             reviewList = new ArrayList<Review>();
-            saveData(reviewList);
+            saveData();
         }
-        reviewList = (ArrayList<Review>)loadData();
         return controllerInstance;
     }
 
     public void createReview(String movieName, int rating, String comments, String reviewer){ // TODO review does not increase in size at all.
         Review review = new Review(movieName, rating, comments, reviewer);
         reviewList.add(review);
+        saveData();
     }
 
     public void listReviews(String movieName)
     {
-        if(reviewList.size()==0) {
+        if(reviewList.size() == 0) {
             System.out.println("There is currently no reviews for this movie yet");
             
             return;
         }
-    
+        
+        System.out.print("Reviews for " + movieName + ":\n");
         for (int i = 0; i < reviewList.size(); i++){
-            if (reviewList.get(i).getMovieName() == movieName)
+            if (reviewList.get(i).getMovieName().equals(movieName))
             {
-                System.out.println(reviewList.get(i).getRating());
+                System.out.println(reviewList.get(i).getRating() + "/5");
                 System.out.printf("By: %s\n", reviewList.get(i).getReviewer());
                 System.out.println(reviewList.get(i).getReview());
                 System.out.println();
@@ -54,12 +59,12 @@ public class ReviewController implements Serializable{
         }
     }
 
-    public static void saveData(ArrayList<Review> bookingObj){  
+    public static void saveData(){  
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
         
-            objectOut.writeObject(bookingObj);
+            objectOut.writeObject(reviewList);
             objectOut.close();
         } catch (IOException e) {
             e.printStackTrace();

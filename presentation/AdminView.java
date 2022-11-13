@@ -129,8 +129,12 @@ public class AdminView{
                         input.nextLine();
                             
                         cinemacontroller.createCinema(cineplex, cinemaId, cinemaType, rows, cols);
+                        CinemaController.saveData();
                     }
-                    else if (configOption == 5) cinemacontroller.defineLayout(getCinemaChoiceFromUser());
+                    else if (configOption == 5) {
+                        cinemacontroller.defineLayout(getCinemaChoiceFromUser());
+                        CinemaController.saveData();
+                    }
                     else if (configOption == 6) {System.out.println("Returning..."); break;}
                     else System.out.println("Invalid option. Returning...");
                     break;
@@ -209,6 +213,7 @@ public class AdminView{
                     break;
                 
                 case 5: // TODO View showings
+                    showingcontroller.displayShowings();
                     
                     break;
                 case 6: // Add showing to a cinema
@@ -216,14 +221,17 @@ public class AdminView{
                     if (showingcontroller.addShowing(cinemaToBeAdded)) {
                         System.out.println("Showing successfully added.");
                     }
+                    ShowingController.saveData();
                     break;                    
                 case 7: // Edit showing to a cinema
                     Cinema cinemaToBeEdited = getCinemaChoiceFromUser();
                     showingcontroller.editShowing(cinemaToBeEdited);
+                    ShowingController.saveData();
                     break;
                 case 8: // Delete showing to a cinema
                     Cinema cinemaToBeDeleted = getCinemaChoiceFromUser();
                     showingcontroller.deleteShowing(cinemaToBeDeleted);
+                    ShowingController.saveData();
                     break;
 
                 case 9: //return to main menu.

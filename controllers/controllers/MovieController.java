@@ -146,7 +146,7 @@ public class MovieController implements Serializable{
     // returns filtered list of movies that are PREVIEW or NOW SHOWING only
     public ArrayList<Movie> getShowingMovieList() {
 
-        ArrayList<Movie> selectedMovieList = new MovieController().getShowingMovieList();
+        ArrayList<Movie> selectedMovieList = new ArrayList<Movie>();
 
         for (int i = 0; i < movieList.size(); i++) {
             if (movieList.get(i).getStatus() != showingStatus.END_OF_SHOWING ||
@@ -310,10 +310,12 @@ public class MovieController implements Serializable{
         do {
             System.out.println(
             "What do you want to do? \n" +
+            "-------\n" + 
             "1. View Reviews\n" +
             "2. Create Review\n" +
             "3. Make Booking\n" +
-            "0. Back"
+            "0. Back \n" + 
+            "-------"
             );
         
             System.out.println("Enter option: ");
@@ -351,7 +353,6 @@ public class MovieController implements Serializable{
 
                     ReviewController.getController().createReview(
                         selectedMovie.getMovieName(), rating, reviewBody, movieGoer.getMovieGoerName());
-
                     break;
 
                 case 3: // Make booking
@@ -366,11 +367,13 @@ public class MovieController implements Serializable{
                     System.out.println("Which Cineplex do you want to view the movie from?");
 
                     //Prints Cineplex list for Users to choose from
+                    System.out.println("-------");
                     for(String key : CinemaController.cineplexMap.keySet())
                     {
                         System.out.println(key);
                     }
-                                     
+                    System.out.println("-------");
+                                    
                     //Checks if user input is a valid cineplex
                     while(!isCineplex)
                     {
@@ -392,6 +395,7 @@ public class MovieController implements Serializable{
                     {
                         System.out.println((i+1) + ":" + showingList.get(i).getShowtime());
                     }
+                    if (showingList.size()==0) System.out.println("No showings found.");
 
                     while (choice > showingList.size() || choice < 0)
                     {
@@ -424,9 +428,11 @@ public class MovieController implements Serializable{
         do {
             System.out.println(
                 "View top 5 movies by:\n" +
+                "-------\n" + 
                 "1. By ticket sales\n" +
                 "2. By overall rating\n" +
-                "0. Back"
+                "0. Back" + 
+                "-------\n"
             );
 
             System.out.println("Enter option: ");

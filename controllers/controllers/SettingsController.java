@@ -20,7 +20,7 @@ public class SettingsController implements Serializable{
     private static HashMap<Seat.seatType, Double> ticketPrices; //save ticket prices for each seat type to file.
     private static String price_filepath = "ticketprices.ser";
 
-    private static HashMap<Cinema.classType, Double> cinemaPrices; //save an addition price for each cinema to file. (normal cinema should be 0)
+    private static HashMap<Cinema.classType, Double> cinemaPrices; //save an addition price for each cinema to file. 
     private static String cinema_filepath = "cinemaprices.ser";
 
     private static ArrayList<LocalDate> holidays; //save holiday dates to file.

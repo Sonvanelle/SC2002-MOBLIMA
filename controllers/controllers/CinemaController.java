@@ -63,15 +63,25 @@ public class CinemaController implements Serializable {
     }
 
     public Cinema getCinemaByIdAndCineplex(int id, String cineplex) { 
-        for (HashMap.Entry<String, ArrayList<Cinema>> mapElement : cineplexMap.entrySet()) {
-            ArrayList<Cinema> currCinemasArrayList = mapElement.getValue();
-            for (Cinema c: currCinemasArrayList) {
-                if (c.getCinemaID() == id && cineplex.toUpperCase().equals(mapElement.getKey())) { 
-                    return c;
-                }
-            }
+        ArrayList<Cinema> cinemas = cineplexMap.get(cineplex);
+        Cinema selectedCinema = null;
+        for (Cinema c : cinemas)
+        {
+            if (c.getCinemaID() == id)
+                selectedCinema = c;
+
         }
-        return null;
+        return selectedCinema;
+        
+        // for (HashMap.Entry<String, ArrayList<Cinema>> mapElement : cineplexMap.entrySet()) {
+        //     ArrayList<Cinema> currCinemasArrayList = mapElement.getValue();
+        //     for (Cinema c: currCinemasArrayList) {
+        //         if (c.getCinemaID() == id && cineplex.toUpperCase().equals(mapElement.getKey())) { 
+        //             return c;
+        //         }
+        //     }
+        // }
+        // return null;
     }
 
     public boolean checkCinemaIdExistsInCineplex(int id, String cineplex) {

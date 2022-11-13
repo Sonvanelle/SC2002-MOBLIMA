@@ -320,14 +320,14 @@ public class ShowingController implements Serializable{
         while (movieChoice < 1 || movieChoice > movieList.size()) {
             System.out.printf("Error. Enter an index from %d to %d: \n", 1, movieList.size());
             movieChoice = sc.nextInt();
+            sc.nextLine();
         }
         movieChoice -= 1;
         
-        //sc.nextLine();
 
         // Get showtime from admin
-        System.out.printf(movieList.get(movieChoice).getMovieName() + " selected..\n")
-        System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm: ");
+        System.out.printf(movieList.get(movieChoice).getMovieName() + " selected..\n");
+        System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm ");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         boolean validDateTime = false;
         LocalDateTime newShowTime = null;        
@@ -353,7 +353,7 @@ public class ShowingController implements Serializable{
         ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema);
         if (verifyNoShowingOverlaps(cinema, newShowing)) { // validate if no showing overlaps
             for (int i=0; i < showingListForCinema.size(); i++) { // Add at correct location in chronological order
-                if (showingListForCinema.get(i).getShowtime().compareTo(newShowing.getShowtime())>0) { // TODO Might be buggy
+                if (showingListForCinema.get(i).getShowtime().compareTo(newShowing.getShowtime())>0) { // !!! If got bug when showings added across different cinemas/cineplexes, this line prob the culprit
                     showingList.add(i, newShowing); 
                     return true;
                 }
@@ -373,11 +373,12 @@ public class ShowingController implements Serializable{
         Scanner sc = new Scanner(System.in);
 
         // Print out all showings with indexes
-        System.out.println("\nList of showings:");
+        System.out.println("\n-------\nList of showings:");
         for (int i = 0; i < showingListForCinema.size(); i++) {
             Movie currentMovie = showingListForCinema.get(i).getMovie();
             System.out.printf("Movie %d: %-30s | %tT - %tT\n", i+1, showingListForCinema.get(i).getMovie().getMovieName(), showingListForCinema.get(i).getShowtime(), showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
         }
+        System.out.println("-------");
 
         // Let user select index of showing they want to change
         System.out.println("\nEnter index of showing you would like to edit: ");
@@ -431,8 +432,6 @@ public class ShowingController implements Serializable{
                         System.out.println("Error. Please enter a valid date in the format DD-MM-YYYY hh:mm");
                     }
                 }
-                // TODO not all "showingList" should be changed to "showingListForCinema", decide which to keep and which to change
-                 // , same for deleteShowing 
                 Showing newShowing = new Showing(cinema, newShowTime, showingListForCinema.get(index).getMovie()); 
                 Showing tempOldShowing = showingListForCinema.get(index);
                 
@@ -456,11 +455,12 @@ public class ShowingController implements Serializable{
         Scanner sc = new Scanner(System.in);
 
         // Print out all showings with indexes 
-        System.out.println("\nList of showings:");
+        System.out.println("\n-------\nList of showings:");
         for (int i = 0; i < showingListForCinema.size(); i++) {
             Movie currentMovie = showingListForCinema.get(i).getMovie();
             System.out.printf("Movie %d: %-30s | %tT - %tT\n", i+1, showingListForCinema.get(i).getMovie().getMovieName(), showingListForCinema.get(i).getShowtime(), showingListForCinema.get(i).getShowtime().plusMinutes(currentMovie.getMovieMin()));
         }
+        System.out.println("-------");
 
         // Let user select index of showing they want to delete
         System.out.println("\nEnter index of showing you would like to delete: ");
@@ -492,18 +492,42 @@ public class ShowingController implements Serializable{
     {
         ArrayList<Showing> result = new ArrayList<Showing>();
         CinemaController cinemaController = CinemaController.getController();
-        ArrayList<Cinema> cinemas = cinemaController.cineplexMap.get(cineplex);
-        for (Showing s: showingList)
-        {
-            for (Cinema c : cinemas)
-            {
-                if (c.equals(s.getShowingCinema()))
-                {
+        ArrayList<Cinema> cinemas = CinemaController.cineplexMap.get(cineplex); // e.g. cinemas: [JURONG 1, JURONG 2, JURONG 3]
+        if (cinemas == null) {System.out.println("No such cineplex found."); return null;}
+
+        // e.g. showingList: ["Planet apes 5am cinemaid1 (Jurong)" , "Planet apes 10am cinemaid2 (Jurong)", "Planet apes 5am cinemaid2 (Orchard)"] 
+        for (Showing s : showingList)
+        {        
+            System.out.println("Showing: " + s.getMovie().getMovieName() + " " + s.getShowtime() + " | Cinema id: " + s.getShowingCinema().getCinemaID());
+            
+            System.out.println(cinemas.size());
+
+            // if s.getShowingCinema()
+            for(Cinema c : cinemas) {// if String cineplex.equals cineplexMap.get(s.getShowingCinema())
+                if (c.equals(s.getShowingCinema())){
                     result.add(s);
+                    System.out.println("Added\n");
                 }
             }
+            System.out.println("-----");
         }
+    
         return result;
+    }
+
+    public void displayShowings() {
+        CinemaController cc = CinemaController.getController();
+        // cc.
+
+        for (Showing s: showingList) {
+            
+            System.out.println(s.getMovie().getMovieName() + " " + s.getShowtime() + " Cinema id is " + 
+            s.getShowingCinema().getCinemaID() );
+            // if (c.equals(s.getShowingCinema())){
+            //     result.add(s);
+            //     System.out.println("Added\n");
+            // }
+        }
     }
 
     public static void saveData(){  

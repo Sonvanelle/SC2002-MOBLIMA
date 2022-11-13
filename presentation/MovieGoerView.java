@@ -149,11 +149,14 @@ public class MovieGoerView {
                     
                 case 0:
                     System.out.println("Exiting...");
+                    isLogin = false;
+                    movieGoerController.resetCurrentMovieGoer();
                     break;
 
                 default:
                     System.out.println("Invalid option.");
                     break;
+
 			}
         
         } while(option != 0 || movieGoerController.getCurrentMovieGoer() != null);
