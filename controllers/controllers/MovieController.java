@@ -371,7 +371,7 @@ public class MovieController implements Serializable{
                         // isCineplex = CinemaController.cineplexMap.containsKey(cineplex);     
                     }
 
-                    ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);
+                    ArrayList<Showing> showingList = ShowingController.getController().listShowingsByCineplex(cineplex);// TODO showinglist is empty
 
                     System.out.println("List of Showings at " + cineplex);
                     for(int i = 0; i < showingList.size(); i++)

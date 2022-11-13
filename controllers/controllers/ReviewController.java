@@ -20,16 +20,17 @@ public class ReviewController implements Serializable{
         if (controllerInstance == null) {
             controllerInstance = new ReviewController();
         }
-        reviewList = (ArrayList<Review>)loadData();
+        
         if (reviewList==null){
             System.out.println("No reviewList found; creating new file.");
             reviewList = new ArrayList<Review>();
             saveData(reviewList);
         }
+        reviewList = (ArrayList<Review>)loadData();
         return controllerInstance;
     }
 
-    public void createReview(String movieName, int rating, String comments, String reviewer){
+    public void createReview(String movieName, int rating, String comments, String reviewer){ // TODO review does not increase in size at all.
         Review review = new Review(movieName, rating, comments, reviewer);
         reviewList.add(review);
     }
