@@ -7,6 +7,9 @@ import java.util.Scanner;
 import entities.MovieGoer;
 import utils.SerializeObjects;
 
+/**
+ * Controller class that handles the creation, deletion, and modification of moviegoer accounts
+ */
 public class MovieGoerController implements Serializable {
 
     private static final String filepath = "movieGoerList.ser"; // testing purposes

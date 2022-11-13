@@ -16,7 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 
 /**
- * It's a controller class that handles the reviews for movies
+ * Controller class that handles the creation, modification of Reviews for Movies.
  */
 public class ReviewController implements Serializable {
     private static ArrayList<Review> reviewList;

@@ -17,7 +17,7 @@ import entities.MovieGoer;
 import utils.SerializeObjects;
 
 /**
- * It's a class that holds all the settings for the cinema, such as ticket
+ * Controller class that holds all the settings for the cinema, such as ticket
  * prices, cinema prices,
  * holidays, discounts, etc
  */

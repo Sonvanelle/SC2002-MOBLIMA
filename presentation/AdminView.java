@@ -10,6 +10,9 @@ import entities.showingStatus;
 import java.util.Scanner;
 import java.util.ArrayList;
 
+/**
+ * This class is the view for the admin front end of the application.
+ */
 public class AdminView {
 
     /**

@@ -8,6 +8,10 @@ import java.io.Serializable;
  */
 public class Seat implements Serializable {
 
+  /**
+   * Enum for the type of Seat, which will affect the final booking price.
+   * Also includes empty seats, which will affect the drawn Cinema layout.
+   */
   public enum seatType {
     REGULAR, COUPLE, ELITE, ULTIMA, EMPTY
   }

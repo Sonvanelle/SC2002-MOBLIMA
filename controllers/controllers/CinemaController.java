@@ -17,7 +17,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * It's a controller class that manages the creation of cinemas and their
+ * Controller class that manages the creation of cinemas and their
  * layouts, also saving and loading of the cineplexes
  */
 public class CinemaController implements Serializable {
