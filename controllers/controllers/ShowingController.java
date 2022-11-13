@@ -235,7 +235,6 @@ public class ShowingController implements Serializable{
                     } else {
                         return false;
                     }
-                    
                 }
 
                 Movie previousMovie = getShowingListByCinema(cinema).get(i-1).getMovie();
@@ -319,10 +318,13 @@ public class ShowingController implements Serializable{
         Scanner sc = new Scanner(System.in);
         
         // Print list of currently-showing movies
-        ArrayList<Movie> movieList = new MovieController().getMovieList();
+        ArrayList<Movie> movieList = new MovieController().getShowingMovieList();
+        System.out.println("Currently showing movies:\n");
+
         for (int i = 0; i < movieList.size(); i++) {
-            System.out.printf("Movie %d: %s\n", i+1, movieList.get(i).getMovieName());
+            System.out.printf("%d. %s\n", i+1, movieList.get(i).getMovieName());         
         }
+
         // Get movie choice from admin
         System.out.println("Enter movie index: ");
         int movieChoice = sc.nextInt();
@@ -333,7 +335,8 @@ public class ShowingController implements Serializable{
         movieChoice -= 1;
         
         // Get showtime from admin
-        System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm");
+        System.out.printf(movieList.get(movieChoice).getMovieName() + " selected..\n")
+        System.out.println("Enter new show time in the format DD-MM-YYYY hh:mm: ");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         boolean validDateTime = false;
         LocalDateTime newShowTime = null;        

@@ -143,6 +143,20 @@ public class MovieController implements Serializable{
         return movieList;
     }
 
+    // returns filtered list of movies that are PREVIEW or NOW SHOWING only
+    public ArrayList<Movie> getShowingMovieList() {
+
+        ArrayList<Movie> selectedMovieList = new MovieController().getShowingMovieList();
+
+        for (int i = 0; i < movieList.size(); i++) {
+            if (movieList.get(i).getStatus() != showingStatus.END_OF_SHOWING ||
+                movieList.get(i).getStatus() != showingStatus.COMING_SOON) {
+                selectedMovieList.add(movieList.get(i));
+            }
+        }
+        return selectedMovieList;
+    }
+
     // helper for printMovieListByStatus, takes in an array list and prints movie name and details
     public void printMovieList(ArrayList<Movie> moviesToPrint) {
         System.out.println("------------\n");
