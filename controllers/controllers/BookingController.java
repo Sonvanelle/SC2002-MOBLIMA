@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * It's a controller class that handles the creation of bookings, and also
+ * Controller class that handles the creation of bookings, and also
  * handles the saving and
  * loading of booking data
  */

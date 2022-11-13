@@ -9,6 +9,10 @@ import entities.Seat.seatType;
  * Contains the cinemaID, classType, seatingPlan, row, column, and cineplex
  */
 public class Cinema implements Serializable {
+
+    /**
+     * Enum for the type of Cinema, which will affect the final booking price.
+     */
     public enum classType {
         PLATINUM, GOLDEN, NORMAL
     }

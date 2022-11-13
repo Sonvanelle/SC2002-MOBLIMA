@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * It's a controller class that handles the creation, deletion, and editing of
- * movies
+ * Controller class that handles the creation, deletion, and editing of
+ * Movies, as well as displaying the parameters.
  */
 public class MovieController implements Serializable {
     private static ArrayList<Movie> movieList;
