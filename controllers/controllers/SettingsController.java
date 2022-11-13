@@ -1,10 +1,6 @@
 package controllers;
 
 import java.io.Serializable;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 
 import java.time.LocalDateTime;
 import java.time.DayOfWeek;
@@ -18,6 +14,7 @@ import entities.Seat;
 import entities.Cinema;
 import entities.Showing;
 import entities.MovieGoer;
+import utils.SerializeObjects;
 
 /**
  * It's a class that holds all the settings for the cinema, such as ticket
@@ -40,7 +37,7 @@ public class SettingsController implements Serializable {
     private static SettingsController controllerInstance = null;
 
     private static ArrayList<String> discountTypes = new ArrayList<String>(
-            Arrays.asList("Holiday", "Weekend", "Senior")); // any discounts are added here.
+            Arrays.asList("Wednesday", "Thursday", "Students", "Holiday", "Weekend", "Senior")); // any discounts are added here.
 
     // The code is creating a new instance of the SettingsController class.
     // loads a controller instance + ticketPrices, cinemaPrices, holidays from file.
@@ -51,10 +48,10 @@ public class SettingsController implements Serializable {
             controllerInstance = new SettingsController();
         }
 
-        ticketPrices = (HashMap<Seat.seatType, Double>) loadData(price_filepath);
-        holidays = (ArrayList<LocalDate>) loadData(holidays_filepath);
-        cinemaPrices = (HashMap<Cinema.classType, Double>) loadData(cinema_filepath);
-        discounts = (HashMap<String, Double>) loadData(discounts_filepath);
+        ticketPrices = (HashMap<Seat.seatType, Double>) SerializeObjects.loadData(price_filepath);
+        holidays = (ArrayList<LocalDate>) SerializeObjects.loadData(holidays_filepath);
+        cinemaPrices = (HashMap<Cinema.classType, Double>) SerializeObjects.loadData(cinema_filepath);
+        discounts = (HashMap<String, Double>) SerializeObjects.loadData(discounts_filepath);
 
         if (ticketPrices == null) { // if there are no ticket prices, we must set a ticket price for each seat type.
             Scanner sc = new Scanner(System.in);
@@ -70,13 +67,13 @@ public class SettingsController implements Serializable {
                 ticketPrices.put(seat, sc.nextDouble());
                 sc.nextLine();
             }
-            saveData(ticketPrices, price_filepath);
+            SerializeObjects.saveData(price_filepath, ticketPrices);
         }
 
         if (holidays == null) {
             System.out.println("No holidays found; creating new file.");
             holidays = new ArrayList<LocalDate>();
-            saveData(holidays, holidays_filepath);
+            SerializeObjects.saveData(holidays_filepath, holidays);
         }
 
         if (cinemaPrices == null) {
@@ -93,7 +90,7 @@ public class SettingsController implements Serializable {
                 cinemaPrices.put(cinema, sc.nextDouble());
                 sc.nextLine();
             }
-            saveData(cinemaPrices, cinema_filepath);
+            SerializeObjects.saveData(cinema_filepath, cinemaPrices);
         }
 
         if (discounts == null) {
@@ -109,7 +106,7 @@ public class SettingsController implements Serializable {
                 discounts.put(i, sc.nextDouble());
                 sc.nextLine();
             }
-            saveData(discounts, discounts_filepath);
+            SerializeObjects.saveData(discounts_filepath, discounts);
         }
 
         return controllerInstance;
@@ -170,20 +167,21 @@ public class SettingsController implements Serializable {
         int isHoliday = 0;
         for (LocalDate date : holidays) {
             if (date.isEqual(showingDate)) {
+                System.out.println("("+(discounts.get("Holiday")*100)+"% Holiday Discount)");
                 price *= discounts.get("Holiday");
                 isHoliday = 1;
                 break;
             }
         }
 
-        if (showingDate.getDayOfWeek() == DayOfWeek.SATURDAY || showingDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            if (isHoliday == 0) // can't stack holiday and weekend discounts.
-                price *= discounts.get("Weekend");
+        if (showingDate.getDayOfWeek() == DayOfWeek.WEDNESDAY || showingDate.getDayOfWeek() == DayOfWeek.TUESDAY || showingDate.getDayOfWeek() == DayOfWeek.MONDAY){
+            System.out.println("("+(discounts.get("Wednesday")*100)+"% Weekday Discount)");
+            if (isHoliday == 0) price *=discounts.get("Wednesday");
         }
+        if (showingDate.getDayOfWeek() == DayOfWeek.THURSDAY && isHoliday == 0) price *=discounts.get("Thursday");
 
-        if (movieGoer.getMovieGoerAge() >= 65) {
-            price *= discounts.get("Senior");
-        }
+        if (movieGoer.getMovieGoerAge() >= 65) {price *= discounts.get("Senior"); System.out.println("("+(discounts.get("Senior")*100)+"% Senior Discount)");}
+        if (movieGoer.getMovieGoerAge() <= 18) {price *= discounts.get("Students"); System.out.println("("+(discounts.get("Students")*100)+"% Student Discount)");}
 
         return price;
     }
@@ -310,50 +308,9 @@ public class SettingsController implements Serializable {
      * all at any time required.
      */
     public static void saveAllData() {
-        saveData(ticketPrices, price_filepath);
-        saveData(holidays, holidays_filepath);
-        saveData(cinemaPrices, cinema_filepath);
+        SerializeObjects.saveData(price_filepath, ticketPrices);
+        SerializeObjects.saveData(holidays_filepath, holidays);
+        SerializeObjects.saveData(cinema_filepath, cinemaPrices);
         return;
-    }
-
-    /**
-     * It takes the settings object and a file path, and saves the object to the
-     * file path
-     * 
-     * @param obj   The object to be saved
-     * @param fpath
-     */
-    public static void saveData(Object obj, String fpath) {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(fpath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(obj);
-            objectOut.close();
-        } catch (Exception e) {
-            System.out.println("Error saving file in SettingsController: " + e);
-        }
-    }
-
-    /**
-     * It takes a file path as a string, and returns the settings object that is
-     * stored in
-     * that file
-     * 
-     * @param fpath The file path to the file you want to load.
-     * @return The object that was read from the file.
-     */
-    public static Object loadData(String fpath) {
-        try {
-            FileInputStream fileIn = new FileInputStream(fpath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (Exception e) {
-            System.out.println("Error loading file in SettingsController: " + e);
-            return null;
-        }
     }
 }

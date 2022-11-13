@@ -134,10 +134,10 @@ public class AdminView {
                         input.nextLine();
 
                         cinemacontroller.createCinema(cineplex, cinemaId, cinemaType, rows, cols);
-                        CinemaController.saveData();
+                        // CinemaController.saveData();
                     } else if (configOption == 5) {
                         cinemacontroller.defineLayout(getCinemaChoiceFromUser());
-                        CinemaController.saveData();
+                        // cinemacontroller.saveData();
                     } else if (configOption == 6) {
                         SettingsController.getController().printSettings();
                     } else if (configOption == 7) {
@@ -198,7 +198,6 @@ public class AdminView {
                     }
                     moviecontroller.createMovie(movieName, movieMin, val, synopsis, director, cast);
                     System.out.println("New movie: " + movieName + " created; maybe create some showings for it next!");
-                    MovieController.saveData();
                     moviecontroller.printMovieList(moviecontroller.getMovieList());
                     break;
 
@@ -217,7 +216,7 @@ public class AdminView {
                     moviecontroller.viewTop5();
                     break;
 
-                case 5: // TODO View showings
+                case 5:
                     showingcontroller.displayShowings();
 
                     break;
@@ -226,27 +225,22 @@ public class AdminView {
                     if (showingcontroller.addShowing(cinemaToBeAdded)) {
                         System.out.println("Showing successfully added.");
                     }
-                    ShowingController.saveData();
                     break;
                 case 7: // Edit showing to a cinema
                     Cinema cinemaToBeEdited = getCinemaChoiceFromUser();
                     showingcontroller.editShowing(cinemaToBeEdited);
-                    ShowingController.saveData();
                     break;
                 case 8: // Delete showing to a cinema
                     Cinema cinemaToBeDeleted = getCinemaChoiceFromUser();
                     showingcontroller.deleteShowing(cinemaToBeDeleted);
-                    ShowingController.saveData();
                     break;
 
                 case 9: // return to main menu.
                     System.out.println("Exiting to main menu...");
 
                     // Save all controller's data to file when exiting this module.
-                    MovieController.saveData();
-                    ShowingController.saveData();
                     SettingsController.saveAllData();
-                    CinemaController.saveData();
+                    // CinemaController.saveData();
                     cont = 0;
                     break;
 

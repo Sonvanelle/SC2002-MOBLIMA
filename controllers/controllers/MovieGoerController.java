@@ -1,15 +1,11 @@
 package controllers;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import entities.MovieGoer;
+import utils.SerializeObjects;
 
 public class MovieGoerController implements Serializable {
 
@@ -33,11 +29,11 @@ public class MovieGoerController implements Serializable {
         if (controllerInstance == null) {
             controllerInstance = new MovieGoerController();
         }
-        movieGoerList = (ArrayList<MovieGoer>) loadData();
+        movieGoerList = (ArrayList<MovieGoer>) SerializeObjects.loadData(filepath);
         if (movieGoerList == null) {
             System.out.println("No movieGoerList found; creating new file.");
             movieGoerList = new ArrayList<MovieGoer>();
-            saveData();
+            SerializeObjects.saveData(filepath, movieGoerList);
         }
         return controllerInstance;
     }
@@ -128,7 +124,7 @@ public class MovieGoerController implements Serializable {
      */
     public void createMovieGoer(MovieGoer movieGoer) {
         movieGoerList.add(movieGoer);
-        saveData();
+        SerializeObjects.saveData(filepath, movieGoerList);
     }
 
     /**
@@ -227,40 +223,4 @@ public class MovieGoerController implements Serializable {
         }
     }
 
-    /**
-     * It writes the movieGoerList object to a file
-     */
-    public static void saveData() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(filepath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(movieGoerList);
-            objectOut.close();
-        } catch (IOException e) {
-            System.out.println("Got an error while saving moviegoer account data: " + e);
-            // e.printStackTrace();
-        }
-    }
-
-    /**
-     * It reads the movieGoerList data from the file and returns it
-     * 
-     * @return The movieGoerList being returned is the object that is being read
-     *         from the file.
-     */
-    private static Object loadData() {
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Got an error while loading moviegoer account data: " + e);
-            // e.printStackTrace();
-            return null;
-        }
-    }
 }

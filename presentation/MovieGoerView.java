@@ -100,9 +100,6 @@ public class MovieGoerView {
                     movieGoerController.resetCurrentMovieGoer();
 
                     // save all the serializables in the controllers
-                    MovieGoerController.saveData();
-                    MovieController.saveData();
-                    BookingController.saveData();
                     break;
 
                 default:

@@ -4,6 +4,7 @@ import entities.Booking;
 import entities.MovieGoer;
 import entities.Seat;
 import entities.Showing;
+import utils.SerializeObjects;
 
 import java.io.Serializable;
 import java.io.FileInputStream;
@@ -40,11 +41,11 @@ public class BookingController implements Serializable {
         if (controllerInstance == null) {
             controllerInstance = new BookingController();
         }
-        bookingHistory = (ArrayList<Booking>) loadData();
+        bookingHistory = (ArrayList<Booking>) SerializeObjects.loadData(filepath);
         if (bookingHistory == null) {
             System.out.println("No bookingHistory found; creating new file.");
             bookingHistory = new ArrayList<Booking>();
-            saveData();
+            SerializeObjects.saveData(filepath, bookingHistory);
         }
         return controllerInstance;
     }
@@ -85,7 +86,7 @@ public class BookingController implements Serializable {
 
         bookingHistory.add(booking);
         booking.printBooking();
-        saveData();
+        SerializeObjects.saveData(filepath, bookingHistory);
     }
 
     /**
@@ -99,45 +100,10 @@ public class BookingController implements Serializable {
             return;
         }
         for (int i = 0; i < bookingHistory.size(); i++) {
-            if (bookingHistory.get(i).getMovieGoer().equals(movieGoer)) {
+            if (bookingHistory.get(i).getMovieGoer().getEmailAddress().equals(movieGoer.getEmailAddress())) {
                 bookingHistory.get(i).printBooking();
             }
         }
     }
 
-    /**
-     * It takes the bookingHistory object and writes it to a file
-     */
-    public static void saveData() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(filepath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(bookingHistory);
-            objectOut.close();
-        } catch (IOException e) {
-            System.out.println("Got an error while saving booking data: " + e);
-            // e.printStackTrace();
-        }
-    }
-
-    /**
-     * It reads the file (bookingHistory) at the filepath, and returns the object
-     * that was saved there
-     * 
-     * @return The object that was read from the file.
-     */
-    public static Object loadData() {
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Got an error while loading booking data: " + e);
-            return null;
-        }
-    }
 }

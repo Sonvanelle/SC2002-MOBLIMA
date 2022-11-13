@@ -5,6 +5,7 @@ import entities.Showing;
 import entities.Seat.seatType;
 import entities.Movie;
 import entities.Seat;
+import utils.SerializeObjects;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,11 +38,12 @@ public class CinemaController implements Serializable {
         if (controllerInstance == null) {
             controllerInstance = new CinemaController();
         }
-        cineplexMap = (HashMap<String, ArrayList<Cinema>>) loadData();
+        cineplexMap = (HashMap<String, ArrayList<Cinema>>) SerializeObjects.loadData(filepath);
+
         if (cineplexMap == null) {
             System.out.println("No cineplexMap found; creating new file.");
             cineplexMap = new HashMap<String, ArrayList<Cinema>>();
-            saveData();
+            SerializeObjects.saveData(filepath, cineplexMap);
         }
         return controllerInstance;
     }
@@ -61,7 +63,7 @@ public class CinemaController implements Serializable {
                 : new ArrayList<Cinema>();
         existing.add(cinema);
         cineplexMap.put(cineplex, existing);
-        saveData();
+        SerializeObjects.saveData(filepath, cineplexMap);
     }
 
     /**
@@ -214,7 +216,7 @@ public class CinemaController implements Serializable {
                 userChoice = sc.nextInt();
             }
         }
-        saveData();
+        SerializeObjects.saveData(filepath, cineplexMap);
     }
 
     /**
@@ -524,42 +526,5 @@ public class CinemaController implements Serializable {
 
         }
         System.out.print(" " + rowLetter + "\n\n");
-    }
-
-    /**
-     * It saves the cineplexMap object to a file
-     */
-    public static void saveData() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(filepath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(cineplexMap);
-            objectOut.close();
-            System.out.println("Saved cineplex data.");
-        } catch (Exception e) {
-            System.out.println("Got an error while saving cineplexes data: " + e);
-            // e.printStackTrace();
-        }
-    }
-
-    /**
-     * It reads the data from the filepath and returns the data as an object
-     * 
-     * @return The cineplexMap object that is being read from the file.
-     */
-    public static Object loadData() {
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (Exception e) {
-            System.out.println("Got an error while loading cineplexes data: " + e);
-            // e.printStackTrace();
-            return null;
-        }
     }
 }

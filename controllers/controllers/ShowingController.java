@@ -6,6 +6,7 @@ import entities.Seat.seatType;
 import entities.Movie;
 import entities.Seat;
 import entities.Cinema;
+import utils.SerializeObjects;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,11 +39,11 @@ public class ShowingController implements Serializable {
             controllerInstance = new ShowingController();
         }
 
-        showingList = (ArrayList<Showing>) loadData();
+        showingList = (ArrayList<Showing>) SerializeObjects.loadData(filepath);
         if (showingList == null) {
             System.out.println("No showingList found; creating new file.");
             showingList = new ArrayList<Showing>();
-            saveData();
+            SerializeObjects.saveData(filepath, showingList);
         }
         return controllerInstance;
     }
@@ -176,7 +177,6 @@ public class ShowingController implements Serializable {
             seatPos = sc.nextLine();
         }
         int seatPosRow = ((int) seatPos.charAt(0)) - 65;
-        System.out.println("for debugging: current seatPos char: " + seatPos.charAt(0) + ", seatPosRow: " + seatPosRow);
         int seatPosCol = Integer.parseInt(seatPos.substring(1)) - 1;
 
         // Set occupancy of specific seat element in seating (ArrayList<Seat>) in the
@@ -184,7 +184,7 @@ public class ShowingController implements Serializable {
         int seatIndex = findSeatIndexByRowAndCol(showing, seatPosRow, seatPosCol);
         showing.getSeating().get(seatIndex).setOccupancy(true);
 
-        saveData();
+        SerializeObjects.saveData(filepath, showingList);
         return showing.getSeating().get(seatIndex);
     }
 
@@ -405,7 +405,7 @@ public class ShowingController implements Serializable {
         // Create the newShowing and add it to showingList
         Showing newShowing = new Showing(cinema, newShowTime, movieList.get(movieChoice));
         boolean flag = addShowingHelper(cinema, newShowing);
-        saveData();
+        SerializeObjects.saveData(filepath, showingList);
         return flag;
     }
 
@@ -450,8 +450,7 @@ public class ShowingController implements Serializable {
      * @param cinema Cinema
      */
     public void editShowing(Cinema cinema) {
-        ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema); // TODO size 0 after exiting adminview
-                                                                                  // and reentering (fixed)
+        ArrayList<Showing> showingListForCinema = getShowingListByCinema(cinema);
         if (showingListForCinema.size() == 0) {
             System.out.println("This cinema has no showings currently.");
             return;
@@ -542,7 +541,7 @@ public class ShowingController implements Serializable {
                 userChoice = sc.nextInt();
             }
         }
-        saveData();
+        SerializeObjects.saveData(filepath, showingList);
     }
 
     /**
@@ -580,7 +579,7 @@ public class ShowingController implements Serializable {
         index -= 1;
 
         showingList.remove(showingListForCinema.get(index));
-        saveData();
+        SerializeObjects.saveData(filepath, showingList);
     }
 
     /**
@@ -641,6 +640,7 @@ public class ShowingController implements Serializable {
                 s.setMovie(updatedMovie);
             }
         }
+        SerializeObjects.saveData(filepath, showingList);
     }
 
     /**
@@ -654,42 +654,6 @@ public class ShowingController implements Serializable {
 
             System.out.println(s.getMovie().getMovieName() + " " + s.getShowtime() + " Cinema id is " +
                     s.getShowingCinema().getCinemaID());
-        }
-    }
-
-    /**
-     * Saves the showingList object to a file
-     */
-    public static void saveData() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(filepath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(showingList);
-            objectOut.close();
-        } catch (Exception e) {
-            System.out.println("Got an error while saving showing data: " + e);
-            // e.printStackTrace();
-        }
-    }
-
-    /**
-     * It loads the showingList data from the filepath and returns it
-     * 
-     * @return The showingList object that was saved.
-     */
-    public static Object loadData() {
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (Exception e) {
-            System.out.println("Got an error while loading showing data: " + e);
-            // e.printStackTrace();
-            return null;
         }
     }
 }

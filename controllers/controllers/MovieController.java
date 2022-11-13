@@ -7,13 +7,9 @@ import entities.showingStatus;
 import entities.Cinema;
 import entities.Showing;
 import entities.Review;
+import utils.SerializeObjects;
 
 import java.io.Serializable;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
@@ -37,11 +33,11 @@ public class MovieController implements Serializable {
         if (controllerInstance == null) {
             controllerInstance = new MovieController();
         }
-        movieList = (ArrayList<Movie>) loadData();
+        movieList = (ArrayList<Movie>) SerializeObjects.loadData(filepath);
         if (movieList == null) {
             System.out.println("No movieList found; creating new file.");
             movieList = new ArrayList<Movie>();
-            saveData();
+            SerializeObjects.saveData(filepath, movieList);
         }
         return controllerInstance;
     }
@@ -60,6 +56,7 @@ public class MovieController implements Serializable {
             String synopsis, String director, ArrayList<String> cast) {
         Movie movie = new Movie(movieName, movieMin, val, synopsis, director, cast);
         movieList.add(movie);
+        SerializeObjects.saveData(filepath, movieList);
     }
 
     /**
@@ -416,20 +413,24 @@ public class MovieController implements Serializable {
                     int rating;
                     String reviewBody;
                     System.out.printf("Leave a review for %s!\n", selectedMovie.getMovieName());
-                    System.out.print("Enter your rating from 0-5: ");
+                    System.out.println("Enter your rating from 0-5: ");
 
                     // users can leave ratings in integers from 0-5
                     while (!sc.hasNextInt()) {
                         System.out.println("Please input an integer value. \n");
                         sc.next();
                     }
-                    while (!(sc.nextInt() >= '0' && sc.nextInt() <= '5')) {
-                        System.out.println("Please input an integ value between 0 to 5. \n");
-                        sc.next();
+                    while (true) {
+                        rating = sc.nextInt();
+                        sc.nextLine();
+                        if (rating >= 0 && rating <=5) break;
+                        else {
+                            System.out.println("Rating wasn't between 0 and 5. \n");
+                        }
                     }
 
-                    rating = sc.nextInt();
-                    sc.nextLine();
+                    
+                    
 
                     // enter review body
                     System.out.print("What did you think about the movie? \nInput ENTER when done: ");
@@ -571,7 +572,7 @@ public class MovieController implements Serializable {
                     // sort list and print top 5 (or any number less than 5 but above 0)
                     top5List.sort(Comparator.comparingDouble(Movie::getTicketSales).reversed());
                     if (top5List.size() != 0) {
-                        for (int i = 0; i < Math.min(top5List.size(), 5); i++) {
+                        for (int i = 0; i < Math.min(top5List.size(), 6); i++) {
                             System.out.printf("%d. %s \n Sales: $%.2f\n", (i + 1), top5List.get(i).getMovieName(),
                                     top5List.get(i).getTicketSales());
                         }
@@ -631,7 +632,7 @@ public class MovieController implements Serializable {
             if (movieList.get(i).getMovieName().equals(movieName)) {
                 movieList.get(i).addRating(rating);
                 System.out.println("Review added to " + movieName + "!");
-                saveData();
+                SerializeObjects.saveData(filepath, movieList);
                 return;
             }
         }
@@ -650,47 +651,11 @@ public class MovieController implements Serializable {
         for (int i = 0; i < movieList.size(); i++) {
             if (movieList.get(i).getMovieName().equals(movieName)) {
                 movieList.get(i).addSale(price);
-                saveData();
+                SerializeObjects.saveData(filepath, movieList);
                 return;
             }
         }
         System.out.println("No movie to add a sale to was found.");
     }
 
-    /**
-     * It takes the movieList object and writes it to a file
-     */
-    public static void saveData() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(filepath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(movieList);
-            objectOut.close();
-        } catch (IOException e) {
-            System.out.println("Got an error while saving movie data: " + e);
-            // e.printStackTrace();
-        }
-    }
-
-    /**
-     * It reads the movieList object at the filepath, and returns the object that
-     * was saved there
-     * 
-     * @return The movieList object that was read from the file.
-     */
-    public static Object loadData() {
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Got an error while loading movie data: " + e);
-            // e.printStackTrace();
-            return null;
-        }
-    }
 }

@@ -2,6 +2,7 @@ package controllers;
 
 import entities.Review;
 import entities.Movie;
+import utils.SerializeObjects;
 
 import java.util.ArrayList;
 
@@ -28,11 +29,11 @@ public class ReviewController implements Serializable {
             controllerInstance = new ReviewController();
         }
 
-        reviewList = (ArrayList<Review>) loadData();
+        reviewList = (ArrayList<Review>) SerializeObjects.loadData(filepath);
         if (reviewList == null) {
             System.out.println("No reviewList found; creating new file.");
             reviewList = new ArrayList<Review>();
-            saveData();
+            SerializeObjects.saveData(filepath, reviewList);
         }
         return controllerInstance;
     }
@@ -53,7 +54,7 @@ public class ReviewController implements Serializable {
 
         // add rating to movie object
         MovieController.getController().addRating(movieName, rating);
-        saveData();
+        SerializeObjects.saveData(filepath, reviewList);
     }
 
     /**
@@ -77,40 +78,4 @@ public class ReviewController implements Serializable {
             }
         }
     }
-
-    /**
-     * It writes the reviewList object to a file
-     */
-    public static void saveData() {
-        try {
-            FileOutputStream fileOut = new FileOutputStream(filepath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-
-            objectOut.writeObject(reviewList);
-            objectOut.close();
-        } catch (IOException e) {
-            System.out.println("Exception caught while saving reviewList: " + e);
-            return;
-        }
-    }
-
-    /**
-     * It reads the reviewList file at the filepath, and returns the object
-     * 
-     * @return The reviewList object that was saved in the file.
-     */
-    public static Object loadData() {
-        try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
-            Object obj = objectIn.readObject();
-            objectIn.close();
-            return obj;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Exception caught while loading reviewList: " + e);
-            return null;
-        }
-    }
-
 }
