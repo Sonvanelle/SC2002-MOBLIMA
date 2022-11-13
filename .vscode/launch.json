@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Launch AppView",
+            "request": "launch",
+            "mainClass": "presentation.AppView",
+            "projectName": "SC2002_50dd12a7"
+        },
+        {
             "name": "Java",
             "type": "java",
             "request": "launch",
