@@ -66,7 +66,7 @@ public class MovieGoerController implements Serializable {
 
         System.out.println("Creating new account. \nWe will require a valid name, email, mobile number and age:");
 
-        while(!isEmailValid(email) || !isMobileNumberValid(number) || !isMovieGoerValid(email, number)){
+        do{
             System.out.print("Enter your name: ");
             name = sc.nextLine();
             System.out.print("Enter your email address: ");
@@ -75,7 +75,7 @@ public class MovieGoerController implements Serializable {
             number = sc.nextLine();
             System.out.print("Enter your age: ");
             age = sc.nextInt();
-        }
+        }while(!isEmailValid(email) || !isMobileNumberValid(number) || !isMovieGoerValid(email, number));
         
         MovieGoer movieGoer = new MovieGoer(name, email, number, age);
         return movieGoer;

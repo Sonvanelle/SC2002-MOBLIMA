@@ -208,7 +208,7 @@ public class AdminView{
                     moviecontroller.viewTop5();
                     break;
                 
-                case 5: // View showings
+                case 5: // TODO View showings
                     
                     break;
                 case 6: // Add showing to a cinema
