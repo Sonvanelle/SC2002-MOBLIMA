@@ -4,14 +4,16 @@ SC2002-MOBLIMA
 Movie Booking and Listing Management Application (MOBLIMA) provides a simple interface approximating a movie theatre chain's front and back-facing software.
 This project was part of NTU's Computer Science SC2002 Object-Oriented Design & Programming module, allowing for demonstration of proficiency in different OOP concepts.
 
+#
+
 It supports admin operations such as:
 - Creating and modifying theatre layouts and seating
 - Defining ticket prices for different seat categories and holidays
 - Creating and updating movie listings, showings
 - Viewing movie sales figures and Top 5 metrics
 
-Movie-goers also may create accounts on the application for:
-- Viewing movies by showing status
+Movie-goers also may create accounts on the application to:
+- View movies by showing status
 - Make bookings for movie showings
 - Leave reviews
 
